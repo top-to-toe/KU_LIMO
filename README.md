@@ -4,3 +4,4 @@
     - (https://releases.ubuntu.com/jammy) - Desktop image
   - VMware 17 설치
     - https://drive.google.com/file/d/1twlHYAgrWeLSQRO_vHy68lJxr-n1qIWl/view?usp=sharing
+    - 오예
