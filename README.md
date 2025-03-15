@@ -3,3 +3,4 @@
 
 ## 1 Day
 - ubuntu 22.04 (https://releases.ubuntu.com/jammy/)
+  -- Desktop image
