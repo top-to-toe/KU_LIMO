@@ -1,5 +1,7 @@
-# 1 Day
-- 환경 설정(VMware pw: 11)
+---
+# 2025-03-15
+---
+- 개발 가상 환경 설치 및 설정(VMware pw: 11)
   - ubuntu 22.04 
     - (https://releases.ubuntu.com/jammy) - Desktop image
   - VMware 17 설치
