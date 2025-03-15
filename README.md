@@ -4,3 +4,4 @@
     - (https://releases.ubuntu.com/jammy) - Desktop image
   - VMware 17 설치
     - https://drive.google.com/file/d/1twlHYAgrWeLSQRO_vHy68lJxr-n1qIWl/view?usp=sharing
+  - git 복제(clone) 시 명령어 - git clone (git repository URL) . < 마지막에 한칸 띄우고 마침표 붙여줘야 현재 디렉토리에 복제본 끌어오겠다는 의미
