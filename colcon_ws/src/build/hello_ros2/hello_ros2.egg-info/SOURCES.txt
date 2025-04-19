@@ -10,6 +10,7 @@ setup.py
 ../build/hello_ros2/hello_ros2.egg-info/zip-safe
 hello_ros2/__init__.py
 hello_ros2/hello_ros.py
+hello_ros2/move_turtle.py
 resource/hello_ros2
 test/test_copyright.py
 test/test_flake8.py
