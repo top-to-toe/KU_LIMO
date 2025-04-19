@@ -1,3 +1,5 @@
+# 실행 명령어: ros2 launch hello_ros2 message.launch.py
+
 from launch import LaunchDescription
 from launch_ros.actions import Node
 

@@ -13,7 +13,7 @@ class Simple_pub(Node):
 
     def pub_turtle(self):
         msg = String()
-        msg.data = f'hello, ros2 {self.count}'
+        msg.data = f'hello, ros2!! {self.count}'
         self.pub.publish(msg)
         self.count += 1
 
