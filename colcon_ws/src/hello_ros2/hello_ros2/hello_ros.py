@@ -6,10 +6,8 @@
 # ros2 run hello_ros2 hello_ros 
 # ros2 pkg list | grep hello
 
-
 import rclpy
 from rclpy.node import Node
-
 
 class Hello(Node):
     def __init__(self):
