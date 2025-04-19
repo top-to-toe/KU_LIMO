@@ -1,4 +1,3 @@
-#/turtle1/cmd_vel [geometry_msgs/msg/Twist]
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
