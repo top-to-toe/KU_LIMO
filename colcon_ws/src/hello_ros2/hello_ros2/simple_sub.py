@@ -8,9 +8,9 @@ class Simple_sub(Node):
         super().__init__('simple_sub')
         self.create_subscription(String, 'message', self.sub_callback, 10)
 
-    def sub_callback(self, msg : String):
-        print(msg.data)
-        
+    def sub_callback(self, msg: String):
+        self.get_logger().info(msg.data)
+
 
 def main():
     rclpy.init()

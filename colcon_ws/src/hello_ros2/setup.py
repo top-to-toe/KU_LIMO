@@ -1,4 +1,6 @@
 from setuptools import find_packages, setup
+import os
+from glob import glob
 
 package_name = 'hello_ros2'
 
@@ -10,6 +12,7 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        ('share/' + package_name + '/launch', glob(os.path.join('launch', '*.launch.py')))
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -22,7 +25,8 @@ setup(
         'console_scripts': [
             'hello_ros = hello_ros2.hello_ros:main',
             'move_turtle = hello_ros2.move_turtle:main',
-            'simple_sub = hello_ros2.simple_sub:main'
+            'simple_sub = hello_ros2.simple_sub:main',
+            'simple_pub = hello_ros2.simple_pub:main'
         ],
     },
 )
