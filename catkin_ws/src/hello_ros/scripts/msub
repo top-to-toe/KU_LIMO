@@ -6,17 +6,15 @@
 #
 # [msub 노드] (Message Subscriber Node)
 #
-# 이 노드는 '/message' 토픽에서 문자열(String) 메시지를 구독(subscribe)하고,
-# '/time' 토픽에서 헤더(Header) 메시지를 구독하여 수신된 데이터를 화면에 출력합니다.
-# 여러 발행자 노드로부터 정보를 받아 처리하거나 로깅하는 데 유용합니다.
+# 이 노드는 '/message' 토픽에서 문자열(String) 메시지를 구독하여 수신된 데이터를 화면에 출력합니다.
 #
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 # rospy 라이브러리를 가져옵니다. ROS (Robot Operating System) 기능을 사용하기 위해 필요합니다.
 import rospy
-# std_msgs 패키지에서 String 및 Header 메시지 타입을 가져옵니다.
-# String은 기본적인 문자열 데이터를, Header는 타임스탬프와 프레임 ID와 같은 메타데이터를 담는 데 사용됩니다.
-from std_msgs.msg import String, Header
+# std_msgs 패키지에서 String 메시지 타입을 가져옵니다.
+# String은 기본적인 문자열 데이터를 담는 데 사용됩니다.
+from std_msgs.msg import String
 
 # Msub 클래스를 정의합니다. ROS 노드의 주요 기능을 이 클래스 안에 구현합니다.
 class Msub:
@@ -26,23 +24,12 @@ class Msub:
         # '/message'라는 이름의 토픽에서 String 타입의 메시지를 구독하고,
         # 메시지가 도착하면 self.message_callback 함수를 호출하도록 설정합니다.
         self.sub_message = rospy.Subscriber('message', String, self.message_callback)
-        # 또 다른 Subscriber를 생성합니다.
-        # '/time'이라는 이름의 토픽에서 Header 타입의 메시지를 구독하고,
-        # 메시지가 도착하면 self.time_callback 함수를 호출하도록 설정합니다.
-        self.sub_time = rospy.Subscriber('time', Header, self.time_callback)
 
     # '/message' 토픽에서 메시지가 도착했을 때 호출되는 콜백(callback) 함수입니다.
     # msg 인자는 수신된 String 메시지 객체입니다.
     def message_callback(self, msg: String):
-        # rospy.loginfo() 함수를 사용하여 수신된 메시지의 'data' 필드 내용을 터미널에 출력합니다.
+        # rospy.loginfo() 함수를 사용하여 수신된 '/message' 토픽의 메시지 내용을 터미널에 출력합니다.
         rospy.loginfo(f"/message received by /msub: {msg.data}")
-
-    # '/time' 토픽에서 메시지가 도착했을 때 호출되는 콜백(callback) 함수입니다.
-    # msg 인자는 수신된 Header 메시지 객체입니다.
-    def time_callback(self, msg: Header):
-        # rospy.loginfo() 함수를 사용하여 수신된 Header 메시지의 타임스탬프 정보를 터미널에 출력합니다.
-        # msg.stamp.secs는 초 단위의 시간, msg.stamp.nsecs는 나노초 단위의 시간을 나타냅니다.
-        rospy.loginfo(f"/time received by /msub from /mtpub: {msg.stamp.secs}.{msg.stamp.nsecs}")
 
 # 메인 실행 함수입니다. 이 스크립트가 직접 실행될 때 호출됩니다.
 def main():
