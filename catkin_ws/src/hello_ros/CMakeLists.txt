@@ -1,8 +1,6 @@
 # sudo apt update
 # sudo apt install git
 
-
-
 cmake_minimum_required(VERSION 3.0.2)
 project(hello_ros)
 find_package(catkin REQUIRED COMPONENTS
@@ -24,6 +22,9 @@ catkin_install_python(PROGRAMS
   scripts/mpub
   scripts/msub
   scripts/msub2
+  scripts/simpleServiceServer
+  scripts/simpleServiceClient
+  scripts/simpleServiceClient2
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
