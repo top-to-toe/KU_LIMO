@@ -31,16 +31,19 @@ class MTsub:
         self.sub_message = rospy.Subscriber('message', String, self.message_callback)
 
     # '/time' 토픽에서 메시지가 도착했을 때 호출되는 콜백(callback) 함수입니다.
-    # msg 인자는 수신된 Header 메시지 객체입니다.
+    # msg 인자는 수신된 Header 메시지 객체입니다. 이 객체의 'stamp' 필드에 타임스탬프 정보가 담겨 있습니다.
     def time_callback(self, msg: Header):
         # rospy.loginfo() 함수를 사용하여 수신된 '/time' 토픽의 타임스탬프 정보를 터미널에 출력합니다.
-        # msg.stamp.secs는 초 단위의 시간을 나타냅니다.
+        # msg.stamp.secs는 초 단위의 시간을 나타냅니다. 이 시간 정보는 다른 데이터와의 동기화나 시간 기반 로깅에 활용될 수 있습니다.
+        # 예를 들어, 특정 이벤트가 발생한 시간을 기록하거나, 여러 센서 데이터의 시간적 연관성을 분석하는 데 사용될 수 있습니다.
         rospy.loginfo(f"/time received by /mtsub from /mtpub: {msg.stamp.secs}")
 
     # '/message' 토픽에서 메시지가 도착했을 때 호출되는 콜백(callback) 함수입니다.
-    # msg 인자는 수신된 String 메시지 객체입니다.
+    # msg 인자는 수신된 String 메시지 객체입니다. 이 객체의 'data' 필드에 실제 문자열 데이터가 담겨 있습니다.
     def message_callback(self, msg: String):
         # rospy.loginfo() 함수를 사용하여 수신된 '/message' 토픽의 메시지 내용을 터미널에 출력합니다.
+        # 이 문자열 데이터는 로봇의 상태 정보, 외부로부터의 명령, 센서 데이터의 텍스트 표현 등 다양한 정보를 담을 수 있습니다.
+        # 실제 로봇 시스템에서는 이 데이터를 파싱하여 특정 작업을 수행하거나, GUI에 표시하거나, 다른 노드에 전달하는 등의 처리를 할 수 있습니다.
         rospy.loginfo(f"/message received by /mtsub: {msg.data}")
 
 # 메인 실행 함수입니다. 이 스크립트가 직접 실행될 때 호출됩니다.

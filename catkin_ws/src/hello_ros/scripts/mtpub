@@ -31,20 +31,23 @@ class MTpub:
         # queue_size=10은 발행할 메시지가 네트워크 사정 등으로 인해 즉시 전달되지 못할 경우,
         # 최대 10개의 메시지를 버퍼에 저장해 둔다는 설정입니다. 버퍼가 가득 차면 오래된 메시지부터 손실될 수 있습니다.
         self.pub_message2 = rospy.Publisher('message2', String, queue_size=10)
-        # Header 메시지 객체를 미리 생성하여 재사용합니다.
+        # Header 메시지 객체를 미리 생성하여 재사용합니다. 매번 새로운 객체를 생성하는 것보다 효율적입니다.
         self.data_header = Header()
-        # 발행되는 메시지 수를 카운트하기 위한 변수를 초기화합니다.
+        # 발행되는 메시지 수를 카운트하기 위한 변수를 초기화합니다. 주로 발행되는 메시지를 식별하거나 순서를 매기는 데 사용될 수 있습니다.
         self.i = 0
         # rospy.Timer를 생성합니다. 이 타이머는 특정 시간 간격마다 self.publish_data 함수를 호출합니다.
         # rospy.Duration(nsecs=330_000_000)은 0.33초 (330,000,000 나노초) 간격을 의미합니다.
+        # 세 번째 인자인 self.publish_data는 타이머가 만료될 때마다 호출될 함수입니다.
         rospy.Timer(rospy.Duration(nsecs=330_000_000), self.publish_data)
 
     # 주기적으로 데이터를 발행하는 함수입니다. 타이머에 의해 호출됩니다.
     def publish_data(self, _event):
-        # [/time 토픽 발행]
+        # [/time 토픽 발행 처리]
         # Header 메시지의 frame_id 필드에 문자열을 할당합니다. 이 필드는 메시지의 프레임 또는 출처를 식별하는 데 사용될 수 있습니다.
+        # 여기서는 이 메시지가 '/mtpub' 노드에서 발행하는 시간 정보임을 명시합니다.
         self.data_header.frame_id = "base time by MTpub"
         # Header 메시지의 stamp 필드에 현재 ROS 시간을 할당합니다. rospy.Time.now() 함수는 현재 시뮬레이션 또는 실제 시간을 반환합니다.
+        # 이 타임스탬프는 메시지가 발행된 정확한 시간을 기록하며, 구독하는 노드에서 시간 동기화나 데이터 처리 순서를 결정하는 데 중요하게 사용될 수 있습니다.
         self.data_header.stamp = rospy.Time.now()
         # rospy.loginfo() 함수를 사용하여 발행하는 '/time' 토픽의 frame_id를 터미널에 출력합니다. 이는 디버깅이나 노드 동작 확인에 유용합니다.
         rospy.loginfo(self.data_header.frame_id)
@@ -54,11 +57,12 @@ class MTpub:
         # 생성된 Header 메시지를 '/time' 토픽으로 발행합니다. 이 메시지는 '/time' 토픽을 구독하는 다른 노드들에게 전달됩니다.
         self.pub_time.publish(self.data_header)
 
-        # [/message2 토픽 발행]
-        # String 메시지 객체를 생성합니다.
+        # [/message2 토픽 발행 처리]
+        # String 메시지 객체를 생성합니다. 발행할 데이터를 담기 위한 빈 메시지 틀을 만듭니다.
         msg2 = String()
         # 메시지의 'data' 필드에 발행할 문자열 데이터를 할당합니다.
-        # 메시지 내용에 발행 횟수를 포함하여 발행되는 메시지를 구분할 수 있도록 합니다.
+        # 여기서는 간단한 인사말과 함께 발행 횟수를 포함하여 발행되는 메시지를 구분할 수 있도록 합니다.
+        # 실제 로봇 시스템에서는 이 필드에 센서 데이터, 제어 명령 등 다양한 종류의 문자열 정보를 담아 발행할 수 있습니다.
         msg2.data = f"Hello from /mtpub - count: {self.i}"
         # rospy.loginfo() 함수를 사용하여 발행하는 '/message2' 토픽의 내용을 터미널에 출력합니다.
         rospy.loginfo(f"Publishing to /message2: {msg2.data}")

@@ -31,17 +31,20 @@ class Mpub:
 
     # 메시지를 발행하는 함수를 정의합니다.
     def publish_message(self):
-        # String 메시지 객체를 생성합니다.
+        # String 메시지 객체를 생성합니다. 발행할 데이터를 담기 위한 빈 메시지 틀을 만듭니다.
         msg = String()
         # 메시지의 'data' 필드에 발행할 문자열 데이터를 할당합니다.
+        # 이 데이터는 '/message' 토픽을 구독하는 다른 노드들에게 전달될 내용이 됩니다.
         msg.data = "Hello from /mpub"
         # rospy.loginfo() 함수를 사용하여 터미널에 정보를 출력합니다.
-        # 발행하는 메시지의 내용을 화면에 보여줍니다.
+        # 발행하는 메시지의 내용을 화면에 보여줌으로써 노드의 동작을 확인하는 데 유용합니다.
         rospy.loginfo(f"Publishing: {msg.data}")
         # 생성한 메시지를 '/message' 토픽으로 발행합니다.
+        # self.pub (Publisher 객체)의 publish() 메서드를 호출하면 메시지가 ROS 네트워크를 통해 전송됩니다.
         self.pub.publish(msg)
         # self.rate.sleep() 함수를 호출하여 설정된 발행 주기를 유지합니다.
         # 이 함수는 루프가 설정된 시간 간격보다 빠르게 실행되는 것을 방지하여 CPU 사용량을 줄이고 안정적인 동작을 보장합니다.
+        # 1 Hz로 설정했으므로, 이 함수는 약 1초 동안 대기합니다.
         self.rate.sleep()
 
 # 메인 실행 함수입니다. 이 스크립트가 직접 실행될 때 호출됩니다.

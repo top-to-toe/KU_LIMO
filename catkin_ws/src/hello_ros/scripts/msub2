@@ -31,15 +31,23 @@ class Msub2:
         self.sub_message = rospy.Subscriber('message', String, self.message_callback)
 
     # '/message2' 토픽에서 메시지가 도착했을 때 호출되는 콜백(callback) 함수입니다.
-    # msg 인자는 수신된 String 메시지 객체입니다.
+    # msg 인자는 수신된 String 메시지 객체입니다. 이 객체의 'data' 필드에 실제 문자열 데이터가 담겨 있습니다.
     def message2_callback(self, msg: String):
         # rospy.loginfo() 함수를 사용하여 수신된 '/message2' 토픽의 메시지 내용을 터미널에 출력합니다.
+        # 이 예제에서는 단순히 수신된 문자열 데이터를 화면에 보여주는 것이 전부입니다.
+        # 실제 로봇 시스템에서는 이 데이터를 기반으로 특정 동작을 수행하거나, 다른 노드에 데이터를 전달하는 등의 처리를 할 수 있습니다.
+        # 예를 들어, '/message2' 토픽을 통해 특정 센서의 측정값이 주기적으로 들어온다면,
+        # 이 콜백 함수에서 그 값을 읽어와 내부 변수에 저장하거나, 특정 조건에 따라 알람을 발생시키는 등의 로직을 구현할 수 있습니다.
         rospy.loginfo(f"/message2 received by /msub2: {msg.data}")
 
     # '/message' 토픽에서 메시지가 도착했을 때 호출되는 콜백(callback) 함수입니다.
-    # msg 인자는 수신된 String 메시지 객체입니다.
+    # msg 인자는 수신된 String 메시지 객체입니다. 이 객체의 'data' 필드에 실제 문자열 데이터가 담겨 있습니다.
     def message_callback(self, msg: String):
         # rospy.loginfo() 함수를 사용하여 수신된 '/message' 토픽의 메시지 내용을 터미널에 출력합니다.
+        # 이 예제에서는 단순히 수신된 문자열 데이터를 화면에 보여주는 것이 전부입니다.
+        # 실제 로봇 시스템에서는 이 데이터를 기반으로 특정 명령을 처리하거나, 다른 노드에 데이터를 전달하는 등의 처리를 할 수 있습니다.
+        # 예를 들어, '/message' 토픽을 통해 외부로부터 "start", "stop"과 같은 명령이 들어온다면,
+        # 이 콜백 함수에서 명령어를 확인하고 그에 따라 로봇의 동작 상태를 변경하는 등의 로직을 구현할 수 있습니다.
         rospy.loginfo(f"/message received by /msub2: {msg.data}")
 
 # 메인 실행 함수입니다. 이 스크립트가 직접 실행될 때 호출됩니다.

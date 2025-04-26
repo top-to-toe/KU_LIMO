@@ -26,9 +26,13 @@ class Msub:
         self.sub_message = rospy.Subscriber('message', String, self.message_callback)
 
     # '/message' 토픽에서 메시지가 도착했을 때 호출되는 콜백(callback) 함수입니다.
-    # msg 인자는 수신된 String 메시지 객체입니다.
+    # msg 인자는 수신된 String 메시지 객체입니다. 이 객체의 'data' 필드에 실제 문자열 데이터가 담겨 있습니다.
     def message_callback(self, msg: String):
         # rospy.loginfo() 함수를 사용하여 수신된 '/message' 토픽의 메시지 내용을 터미널에 출력합니다.
+        # 이 예제에서는 단순히 수신된 문자열 데이터를 화면에 보여주는 것이 전부입니다.
+        # 실제 로봇 시스템에서는 이 데이터를 기반으로 특정 동작을 수행하거나, 다른 노드에 데이터를 전달하는 등의 처리를 할 수 있습니다.
+        # 예를 들어, 수신된 문자열이 특정 명령어라면 그에 맞는 로봇 팔 움직임을 제어하거나,
+        # 센서 데이터의 특정 값을 나타내는 문자열이라면 그 값을 파싱하여 다른 계산에 사용할 수도 있습니다.
         rospy.loginfo(f"/message received by /msub: {msg.data}")
 
 # 메인 실행 함수입니다. 이 스크립트가 직접 실행될 때 호출됩니다.
