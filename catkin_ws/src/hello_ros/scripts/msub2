@@ -4,53 +4,51 @@
 
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 #
-# [mtsub 노드] (Multi-Topic Subscriber Node)
+# [msub2 노드] (Message Subscriber 2 Node)
 #
-# 이 노드는 '/time' 토픽에서 헤더(Header) 메시지를 구독하고,
-# '/message' 토픽에서 문자열(String) 메시지를 구독하여 수신된 데이터를 화면에 출력합니다.
-# 여러 종류의 정보를 동시에 받아 처리하거나 로깅해야 하는 경우에 유용합니다.
+# 이 노드는 '/message2' 토픽과 '/message' 토픽에서 문자열(String) 메시지를 구독(subscribe)하여
+# 수신된 데이터를 화면에 출력합니다. 여러 토픽의 메시지를 동시에 처리해야 하는 경우에 사용될 수 있습니다.
 #
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 # rospy 라이브러리를 가져옵니다. ROS (Robot Operating System) 기능을 사용하기 위해 필요합니다.
 import rospy
-# std_msgs 패키지에서 Header 및 String 메시지 타입을 가져옵니다.
-# Header는 타임스탬프와 프레임 ID와 같은 메타데이터를, String은 기본적인 문자열 데이터를 담는 데 사용됩니다.
-from std_msgs.msg import Header, String
+# std_msgs 패키지에서 String 메시지 타입을 가져옵니다.
+# String은 기본적인 문자열 데이터를 담는 데 사용됩니다.
+from std_msgs.msg import String
 
-# MTsub 클래스를 정의합니다. ROS 노드의 주요 기능을 이 클래스 안에 구현합니다.
-class MTsub:
+# Msub2 클래스를 정의합니다. ROS 노드의 주요 기능을 이 클래스 안에 구현합니다.
+class Msub2:
     # 클래스의 생성자(constructor)입니다. 객체가 생성될 때 자동으로 호출됩니다.
     def __init__(self):
         # Subscriber를 생성합니다.
-        # '/time'이라는 이름의 토픽에서 Header 타입의 메시지를 구독하고,
-        # 메시지가 도착하면 self.time_callback 함수를 호출하도록 설정합니다.
-        self.sub_time = rospy.Subscriber('time', Header, self.time_callback)
+        # '/message2'라는 이름의 토픽에서 String 타입의 메시지를 구독하고,
+        # 메시지가 도착하면 self.message2_callback 함수를 호출하도록 설정합니다.
+        self.sub_message2 = rospy.Subscriber('message2', String, self.message2_callback)
         # 또 다른 Subscriber를 생성합니다.
         # '/message'라는 이름의 토픽에서 String 타입의 메시지를 구독하고,
         # 메시지가 도착하면 self.message_callback 함수를 호출하도록 설정합니다.
         self.sub_message = rospy.Subscriber('message', String, self.message_callback)
 
-    # '/time' 토픽에서 메시지가 도착했을 때 호출되는 콜백(callback) 함수입니다.
-    # msg 인자는 수신된 Header 메시지 객체입니다.
-    def time_callback(self, msg: Header):
-        # rospy.loginfo() 함수를 사용하여 수신된 '/time' 토픽의 타임스탬프 정보를 터미널에 출력합니다.
-        # msg.stamp.secs는 초 단위의 시간을 나타냅니다.
-        rospy.loginfo(f"/time received by /mtsub from /mtpub: {msg.stamp.secs}")
+    # '/message2' 토픽에서 메시지가 도착했을 때 호출되는 콜백(callback) 함수입니다.
+    # msg 인자는 수신된 String 메시지 객체입니다.
+    def message2_callback(self, msg: String):
+        # rospy.loginfo() 함수를 사용하여 수신된 '/message2' 토픽의 메시지 내용을 터미널에 출력합니다.
+        rospy.loginfo(f"/message2 received by /msub2: {msg.data}")
 
     # '/message' 토픽에서 메시지가 도착했을 때 호출되는 콜백(callback) 함수입니다.
     # msg 인자는 수신된 String 메시지 객체입니다.
     def message_callback(self, msg: String):
         # rospy.loginfo() 함수를 사용하여 수신된 '/message' 토픽의 메시지 내용을 터미널에 출력합니다.
-        rospy.loginfo(f"/message received by /mtsub: {msg.data}")
+        rospy.loginfo(f"/message received by /msub2: {msg.data}")
 
 # 메인 실행 함수입니다. 이 스크립트가 직접 실행될 때 호출됩니다.
 def main():
     # ROS 노드를 초기화합니다.
-    # 'mtsub'이라는 이름으로 ROS 시스템에 이 노드를 등록합니다.
-    rospy.init_node('mtsub')
-    # MTsub 클래스의 객체를 생성하여 노드의 기능을 수행할 인스턴스를 만듭니다.
-    node = MTsub()
+    # 'msub2'라는 이름으로 ROS 시스템에 이 노드를 등록합니다.
+    rospy.init_node('msub2')
+    # Msub2 클래스의 객체를 생성하여 노드의 기능을 수행할 인스턴스를 만듭니다.
+    node = Msub2()
     # rospy.spin() 함수는 노드가 종료될 때까지 콜백 함수들이 호출되도록 대기하는 역할을 합니다.
     # 이 함수가 없으면 노드가 바로 종료되어 메시지를 제대로 수신할 수 없습니다.
     rospy.spin()

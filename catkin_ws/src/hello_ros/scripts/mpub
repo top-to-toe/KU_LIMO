@@ -1,0 +1,70 @@
+#!/usr/bin/env python3
+
+# -*- coding: utf-8 -*-
+
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#
+# [mpub 노드] (Message Publisher Node)
+#
+# 이 노드는 '/message'라는 이름의 토픽에 문자열(String) 메시지를 발행(publish)하는 역할을 수행합니다.
+# 주로 간단한 텍스트 데이터를 다른 노드들에게 전달하는 데 사용될 수 있습니다.
+#
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+# rospy 라이브러리를 가져옵니다. ROS (Robot Operating System) 기능을 사용하기 위해 필요합니다.
+import rospy
+# std_msgs 패키지에서 String 메시지 타입을 가져옵니다. 이 메시지 타입은 기본적인 문자열 데이터를 담는 데 사용됩니다.
+from std_msgs.msg import String
+
+# Mpub 클래스를 정의합니다. ROS 노드의 주요 기능을 이 클래스 안에 구현합니다.
+class Mpub:
+    # 클래스의 생성자(constructor)입니다. 객체가 생성될 때 자동으로 호출됩니다.
+    def __init__(self):
+        # Publisher를 생성합니다.
+        # '/message'라는 이름의 토픽에 (String 타입의) 메시지를 발행할 것이라고 ROS 시스템에 알립니다.
+        # queue_size=10은 발행할 메시지가 네트워크 사정 등으로 인해 즉시 전달되지 못할 경우,
+        # 최대 10개의 메시지를 버퍼에 저장해 둔다는 설정입니다. 버퍼가 가득 차면 오래된 메시지부터 손실될 수 있습니다.
+        self.pub = rospy.Publisher('message', String, queue_size=10)
+        # Rate 객체를 생성합니다. 이 객체는 루프의 실행 속도를 제어하는 데 사용됩니다.
+        # rospy.Rate(1)은 1 Hz (헤르츠), 즉 1초에 한 번씩 루프를 실행하도록 설정합니다.
+        self.rate = rospy.Rate(1)  # 1 Hz로 메시지 발행
+
+    # 메시지를 발행하는 함수를 정의합니다.
+    def publish_message(self):
+        # String 메시지 객체를 생성합니다.
+        msg = String()
+        # 메시지의 'data' 필드에 발행할 문자열 데이터를 할당합니다.
+        msg.data = "Hello from /mpub"
+        # rospy.loginfo() 함수를 사용하여 터미널에 정보를 출력합니다.
+        # 발행하는 메시지의 내용을 화면에 보여줍니다.
+        rospy.loginfo(f"Publishing: {msg.data}")
+        # 생성한 메시지를 '/message' 토픽으로 발행합니다.
+        self.pub.publish(msg)
+        # self.rate.sleep() 함수를 호출하여 설정된 발행 주기를 유지합니다.
+        # 이 함수는 루프가 설정된 시간 간격보다 빠르게 실행되는 것을 방지하여 CPU 사용량을 줄이고 안정적인 동작을 보장합니다.
+        self.rate.sleep()
+
+# 메인 실행 함수입니다. 이 스크립트가 직접 실행될 때 호출됩니다.
+def main():
+    # ROS 노드를 초기화합니다.
+    # 'mpub'이라는 이름으로 ROS 시스템에 이 노드를 등록합니다.
+    # 노드 이름은 ROS 시스템 내에서 이 노드를 식별하는 데 사용됩니다.
+    rospy.init_node('mpub')
+    # Mpub 클래스의 객체를 생성하여 노드의 기능을 수행할 인스턴스를 만듭니다.
+    node = Mpub()
+    # rospy.is_shutdown() 함수는 ROS 시스템이 종료될 때 True를 반환합니다.
+    # 이 while 루프는 ROS 시스템이 종료될 때까지 계속 실행됩니다.
+    while not rospy.is_shutdown():
+        # 정의된 메시지 발행 함수를 주기적으로 호출합니다.
+        node.publish_message()
+
+# 이 스크립트가 직접 실행되는 경우에만 main() 함수를 호출하도록 합니다.
+# 다른 스크립트에서 이 파일을 모듈로 가져올 때는 main() 함수가 자동으로 실행되지 않습니다.
+if __name__ == "__main__":
+    try:
+        # main() 함수를 호출하여 노드를 실행합니다.
+        main()
+    except rospy.ROSInterruptException:
+        # rospy.ROSInterruptException은 Ctrl+C와 같은 인터럽트가 발생했을 때 발생할 수 있는 예외입니다.
+        # 이 예외를 처리함으로써 프로그램이 비정상적으로 종료되는 것을 막고, ROS 시스템에 안전하게 종료 신호를 보낼 수 있습니다.
+        pass
