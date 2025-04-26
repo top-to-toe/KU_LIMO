@@ -22,10 +22,6 @@ from std_msgs.msg import Header, String
 class MTsub:
     # 클래스의 생성자(constructor)입니다. 객체가 생성될 때 자동으로 호출됩니다.
     def __init__(self):
-        # Subscriber를 생성합니다.
-        # '/time'이라는 이름의 토픽에서 Header 타입의 메시지를 구독하고,
-        # 메시지가 도착하면 self.time_callback 함수를 호출하도록 설정합니다.
-        self.sub_time = rospy.Subscriber('time', Header, self.time_callback)
         # 또 다른 Subscriber를 생성합니다.
         # '/message'라는 이름의 토픽에서 String 타입의 메시지를 구독하고,
         # 메시지가 도착하면 self.message_callback 함수를 호출하도록 설정합니다.
