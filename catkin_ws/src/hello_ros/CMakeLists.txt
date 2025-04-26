@@ -1,6 +1,6 @@
 # sudo apt update
 # sudo apt install git
-# git clone https://github.com/top-to-toe/kuLimo.git
+
 
 
 cmake_minimum_required(VERSION 3.0.2)
@@ -12,11 +12,15 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
 )
 
+catkin_python_setup()
+
 catkin_package()
 
 catkin_install_python(PROGRAMS
-  scripts/hello.py
-  scripts/moveTurtle.py
+  scripts/hello
+  scripts/moveTurtle
+  scripts/mtpub
+  scripts/mtsub
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
