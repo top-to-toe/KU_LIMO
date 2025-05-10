@@ -27,7 +27,6 @@ class Service_server(Node):
         self.cnt += 1
         return response
 
-
 def main():
     rclpy.init()
     node = Service_server()
@@ -35,7 +34,6 @@ def main():
         rclpy.spin(node)
     except KeyboardInterrupt:
         node.destroy_node()
-
 
 if __name__ == "__main__":
     main()
