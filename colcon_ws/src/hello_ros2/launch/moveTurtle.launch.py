@@ -32,7 +32,9 @@ def generate_launch_description():
                 package="turtlesim", executable="turtlesim_node", parameters=[param_dir]
             ),
             # move_turtle 노드 실행
-            Node(package="hello_ros2", executable="move_turtle"),
+            Node(
+                package="hello_ros2", executable="move_turtle", parameters=[param_dir]
+            ),
             # change_color_client 노드 실행 (색상 변경)
             Node(package="hello_ros2", executable="change_color_client", name="change_color_client")
         ]
