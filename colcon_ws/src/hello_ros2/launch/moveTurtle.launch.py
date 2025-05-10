@@ -1,3 +1,10 @@
+# ros2 param list
+# ros2 param dump
+# ros2 param dump turtlesim
+# ros2 param dump turtlesim >> turtlesim.yaml
+# ros2 run turtlesim turtlesim_node --ros-args --params-file turtlesim.yaml
+# ros2 launch hello_ros2 moveTurtle.launch.py
+
 import os
 
 from ament_index_python.packages import get_package_share_directory
@@ -5,7 +12,6 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
-
 
 def generate_launch_description():
     param_dir = LaunchConfiguration(
