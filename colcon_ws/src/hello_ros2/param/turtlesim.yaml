@@ -11,6 +11,7 @@
           history: keep_last
           reliability: reliable
     use_sim_time: false
-    # 여기서 linear_velocity와 angular_velocity 추가
+/move_turtle:
+  ros__parameters:
     linear_velocity: 2.0
     angular_velocity: 1.0
