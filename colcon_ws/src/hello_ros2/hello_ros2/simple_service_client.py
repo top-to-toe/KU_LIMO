@@ -1,7 +1,7 @@
 # ros2 run hello_ros2 simple_service_client
 # ros2 run hello_ros2 simple_service_server2
 # ros2 run hello_ros2 simple_service_server
-# 화면의 결과를 비교해 보세요.
+# 화면의 결과 비교.
 
 from asyncio import Future
 
