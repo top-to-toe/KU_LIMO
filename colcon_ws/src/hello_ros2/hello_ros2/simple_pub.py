@@ -1,7 +1,7 @@
+#/turtle1/cmd_vel [geometry_msgs/msg/Twist]
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
-
 
 class Simple_pub(Node):
     def __init__(self):
@@ -12,10 +12,9 @@ class Simple_pub(Node):
 
     def pub_turtle(self):
         msg = String()
-        msg.data = f'hello, ros2!! {self.count}'
+        msg.data = f'hello, ros2 {self.count}'
         self.pub.publish(msg)
         self.count += 1
-
 
 def main():
     rclpy.init()
