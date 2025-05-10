@@ -1,13 +1,15 @@
+# cd ~/kuLimo/colcon_ws/src
 # ros2 pkg create --build-type ament_python hello_ros2
 # code ~/.bashrc
 # cd colcon_ws/
 # colcon build
-# source install/local_setup.bash 
-# ros2 run hello_ros2 hello_ros 
+# source install/local_setup.bash
+# ros2 run hello_ros2 hello_ros
 # ros2 pkg list | grep hello
 
 import rclpy
 from rclpy.node import Node
+
 
 class Hello(Node):
     def __init__(self):
