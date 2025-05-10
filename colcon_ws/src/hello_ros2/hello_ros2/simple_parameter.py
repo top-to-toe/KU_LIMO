@@ -1,5 +1,5 @@
 # ros2 run hello_ros2 simple_parameter --ros-args -p use_sim_time:=True
-# (다른 CLI에서)ros2 param set simple_parameter use_sim_time False
+# (다른 CLI에서)ros2 param set (노드명)simple_parameter use_sim_time (파라미터 값)False
 
 import rclpy
 from rclpy.node import Node
