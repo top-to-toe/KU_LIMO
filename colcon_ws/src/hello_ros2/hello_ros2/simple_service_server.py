@@ -4,7 +4,6 @@ import rclpy
 from rclpy.node import Node
 from std_srvs.srv import SetBool
 
-
 class Service_server(Node):
     def __init__(self):
         super().__init__("service_server")  # 노드 이름
