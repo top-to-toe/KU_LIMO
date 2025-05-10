@@ -25,11 +25,15 @@ def generate_launch_description():
             DeclareLaunchArgument(
                 "param_dir",
                 default_value=param_dir,
-                description="turtlesim paramdter dump file",
+                description="turtlesim parameter dump file",
             ),
+            # turtlesim_node 실행
             Node(
                 package="turtlesim", executable="turtlesim_node", parameters=[param_dir]
             ),
+            # move_turtle 노드 실행
             Node(package="hello_ros2", executable="move_turtle"),
+            # change_color_client 노드 실행 (색상 변경)
+            Node(package="hello_ros2", executable="change_color_client", name="change_color_client")
         ]
     )
