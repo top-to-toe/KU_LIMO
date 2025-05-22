@@ -1,79 +1,10 @@
-# kuLimo
-
 ---
-
-```bash
-# 실행 명령어
-   70  rosrun hello_ros addServer
-   71  cm
-   72  clear
-   73  rosrun hello_ros timeActionServer
-   74  rosrun hello_ros myTopicSub
-   75  clear
-   76  rosrun hello_ros addClient
-   77  clear
-   78  rosrun hello_ros addClient
-   80  clear
-   81  cm
-   82  rosrun hello_ros timeActionClient
-   83  cm
-   84  rosrun hello_ros timeActionClient
-   85  cm
-   86  sb
-   87  rosrun hello_ros timeActionClient2
- 1855  ros2 run hello_ros2 my_topic_pub
- 1856  ros2 run hello_ros2 add_server
-
-
-```
-
-- limo 수업
-  - 1조: 박인규, 정명재, 구찬형, 이현성, 박윤국
-  - 2조: 박정우, 차경민, 김학민, 장대진, 이경용
-  - 3조: 손건희, 최근호, 김지숙, 이승원
-  - 4조: 윤형정, 최용규, 이한솔, 맹진수, 정용태
-
-- Vmware player 파일 다운로드
-[링크](https://drive.google.com/file/d/1twlHYAgrWeLSQRO_vHy68lJxr-n1qIWl/view?usp=sharing)
-
-- vscode deb 파일
-[링크](https://drive.google.com/file/d/1We4ILpw1NTzpspkflSpvdZikvyApTxn0/view?usp=sharing)
-
-```bash
-# 31번 라인
-if [[ "$TERM" == *color* ]]; then
-    color_prompt=yes
-fi
-# 맨 아래에 추가
-source /opt/ros/noetic/setup.bash # ros를 초기화.
-source ~/kuLimo/catkin_ws/devel/setup.bash
-export XDG_RUNTIME_DIR=/run/user/$(id -u)
-mkdir -p /run/user/$(id -u)
-chmod 700 /run/user/$(id -u)
-```
-
+# 2025-03-15
 ---
-
-## 파이썬 수업
-
----
-
-- 수업 일정 (2일)
-  - 2025-03-15, 2025-04-05
-- 수업 목표
-  - VMware 를 이용한 가상환경 운용
-  - 리눅스 명령어
-  - 파이썬 기초 문법
-- [과정 진행 사항](doc/python.md)
-
----
-
-## ROS1, ROS2 수업
-
----
-
-- 수업 목표
-  - ROS1, ROS2 기초 문법
-  - ROS1, ROS2 패키지 만들기
-  - ROS1, ROS2 패키지 사용하기
-- [과정 진행 사항](doc/ros.md)
+- 개발 가상 환경 설치 및 설정(VMware pw: 11)
+  - ubuntu 22.04 
+    - (https://releases.ubuntu.com/jammy) - Desktop image
+  - VMware 17 설치
+    - https://drive.google.com/file/d/1twlHYAgrWeLSQRO_vHy68lJxr-n1qIWl/view?usp=sharing
+  - git 복제(clone) 시 명령어 - git clone (git repository URL) . < 마지막에 한칸 띄우고 마침표 붙여줘야 현재 디렉토리에 복제본 끌어오겠다는 의미
+    - 초기 세팅시 git config user.name = "(이름)"과 git config user.email = "(이메일주소)" 명령어를 통해 초기화해야함.
