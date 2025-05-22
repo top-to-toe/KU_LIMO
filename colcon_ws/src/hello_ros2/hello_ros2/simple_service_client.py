@@ -1,13 +1,14 @@
 # ros2 run hello_ros2 simple_service_client
 # ros2 run hello_ros2 simple_service_server2
 # ros2 run hello_ros2 simple_service_server
-# 화면의 결과 비교.
+# 화면의 결과를 비교해 보세요.
 
 from asyncio import Future
 
 import rclpy
 from rclpy.node import Node
 from std_srvs.srv import SetBool
+
 
 class Service_client(Node):
     def __init__(self):
@@ -37,6 +38,7 @@ class Service_client(Node):
         self.get_logger().info(f"처리 상태: {response.success}")
         self.get_logger().info(f"서버에서 온 메세지: {response.message}")
 
+
 def main():
     rclpy.init()
     node = Service_client()
@@ -44,6 +46,7 @@ def main():
         rclpy.spin(node)
     except KeyboardInterrupt:
         node.destroy_node()
+
 
 if __name__ == "__main__":
     main()

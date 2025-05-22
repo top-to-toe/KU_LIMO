@@ -2,6 +2,7 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
 
+
 class Simple_sub(Node):
     def __init__(self):
         super().__init__('simple_sub')
@@ -9,6 +10,7 @@ class Simple_sub(Node):
 
     def sub_callback(self, msg: String):
         self.get_logger().info(msg.data)
+
 
 def main():
     rclpy.init()

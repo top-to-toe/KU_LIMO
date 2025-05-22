@@ -1,8 +1,8 @@
 /turtlesim:
   ros__parameters:
-    background_b: 0
-    background_g: 0
-    background_r: 255
+    background_b: 200
+    background_g: 16
+    background_r: 10
     qos_overrides:
       /parameter_events:
         publisher:
@@ -11,7 +11,8 @@
           history: keep_last
           reliability: reliable
     use_sim_time: false
+
 /move_turtle:
   ros__parameters:
-    linear_velocity: 2.0
-    angular_velocity: 1.0
+    vel: 1.0
+    angle_vel: 3.0
