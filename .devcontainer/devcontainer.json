@@ -1,8 +1,19 @@
 {
     "name": "ROS Noetic kuLimo Development Container",
-    "containerId": "ros1_noetic",
-    "postAttachCommand": "bash -c \"source /opt/ros/noetic/setup.bash > /dev/null 2>&1 && source /root/kuLimo/catkin_ws/devel/setup.bash > /dev/null 2>&1 && export XDG_RUNTIME_DIR=/run/user/$(id -u) && mkdir -p /run/user/$(id -u) && chmod 700 /run/user/$(id -u)\"",
+    "dockerFile": "Dockerfile",
+    "runArgs": [
+        "--network", "host",
+        "--privileged",
+        "-e", "DISPLAY=${env:DISPLAY}",
+        "-v", "/tmp/.X11-unix:/tmp/.X11-unix"
+    ],
+    "mounts": [
+        "source=${localWorkspaceFolder},target=/root/kuLimo,type=bind,consistency=cached"
+    ],
+    "remoteUser": "root",
     "workspaceFolder": "/root/kuLimo",
+    "postCreateCommand": "bash -c 'echo \"alias sb=\\\"source /opt/ros/noetic/setup.bash && source /root/kuLimo/catkin_ws/devel/setup.bash\\\"\" >> ~/.bash_aliases && echo \"alias cm=\\\"cd ~/kuLimo/catkin_ws && catkin_make\\\"\" >> ~/.bash_aliases && source ~/.bash_aliases'",
+    "postAttachCommand": "bash -c \"source /opt/ros/noetic/setup.bash > /dev/null 2>&1 && source /root/kuLimo/catkin_ws/devel/setup.bash > /dev/null 2>&1 && export XDG_RUNTIME_DIR=/run/user/$(id -u) && mkdir -p /run/user/$(id -u) && chmod 700 /run/user/$(id -u)\"",
     "customizations": {
         "vscode": {
             "settings": {
