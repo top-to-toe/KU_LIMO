@@ -13,6 +13,7 @@
     "remoteUser": "root",
     "workspaceFolder": "/root/kuLimo",
     "postCreateCommand": "bash -c 'echo \"source /opt/ros/noetic/setup.bash\" >> ~/.bashrc && echo \"source /root/kuLimo/catkin_ws/devel/setup.bash\" >> ~/.bashrc && echo \"alias sb=\\\"source /opt/ros/noetic/setup.bash && source /root/kuLimo/catkin_ws/devel/setup.bash\\\"\" >> ~/.bash_aliases && echo \"alias cm=\\\"cd ~/kuLimo/catkin_ws && catkin_make\\\"\" >> ~/.bash_aliases && source ~/.bashrc && source ~/.bash_aliases'",
+    "postStartCommand": "bash -c \"source ~/.bashrc && roscore > /root/roscore.log 2>&1 &\"",
     "postAttachCommand": "bash -c \"export XDG_RUNTIME_DIR=/run/user/$(id -u) && mkdir -p /run/user/$(id -u) && chmod 700 /run/user/$(id -u)\"",
     "customizations": {
         "vscode": {
