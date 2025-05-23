@@ -11,10 +11,10 @@ class Mpub:
         rospy.Timer(rospy.Duration(nsecs=330_000_000), self.print_hello)
 
     def print_hello(self, _event):
-        self.data.first_name = "Choi"
-        self.data.age = 40
-        self.data.score = 75
-        rospy.loginfo(f"name : {self.data.first_name} ,age {self.data.age} , score : {self.data.score}")
+        self.data.first_name = "Lee"
+        self.data.age = 37
+        self.data.score = 33
+        rospy.loginfo(f"name : {self.data.first_name}, age {self.data.age}, score : {self.data.score}")
         self.pub.publish(self.data)
 
 

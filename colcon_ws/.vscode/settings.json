@@ -1,0 +1,9 @@
+{
+    "ros.distro": "humble",
+    "github.copilot.enable": {
+        "*": false,
+        "plaintext": true,
+        "markdown": true,
+        "scminput": false
+    }
+}
