@@ -1,27 +1,70 @@
 #!/usr/bin/env python3
+# 쉬뱅(Shebang) 라인: 이 스크립트가 파이썬3 인터프리터로 실행되어야 함을 운영체제에 알려주는 역할임.
 
-# rosrun hello_ros mtsub
-# rosrun hello_ros mtpub
+# 이 주석들은 이 스크립트들을 ROS에서 실행하는 명령어를 예시로 보여줌.
+# 'rosrun 패키지이름 노드이름' 형태로 터미널에서 실행함.
+# rosrun hello_ros mtsub  # myTopicSub 노드를 실행하는 명령어 예시
+# rosrun hello_ros mtpub  # myTopicPub 노드를 실행하는 명령어 예시
 
 import rospy
+# 'rospy' 모듈을 가져옴. 이는 ROS에서 파이썬 언어로 노드(로봇 프로그램)를 만들 때 필요한 핵심 도구 상자임.
+
 from hello_ros.msg import MyTopic
+# 우리가 만든 'MyTopic.msg' 파일에서 정의한 'MyTopic' 메시지 형태를 파이썬 코드에서 사용할 수 있도록 가져옴.
 
-
+# Msub 이라는 이름의 클래스를 정의함.
+# 이 클래스는 '정보 수신자' 역할을 하는 노드의 '설계도'임.
 class Msub:
     def __init__(self):
+        # '__init__' 메서드는 Msub 클래스로부터 'msub'이라는 객체를 만들 때 가장 먼저 실행되는 초기 설정 부분임.
+
+        # 1. 구독자(Subscriber) 생성:
+        # 'message'라는 토픽으로부터 'MyTopic' 형태의 메시지를 '구독(수신)'할 준비를 함.
+        # 메시지가 도착하면 'self.sub_callback' 함수를 호출하여 처리하도록 설정함.
+        # 이것은 'message' 채널의 뉴스를 구독하고, 새 뉴스가 오면 'sub_callback' 함수에게 자동으로 알려주는 거랑 같음.
         self.sub = rospy.Subscriber('message', MyTopic, self.sub_callback)
+        # [보충 설명]: rospy.Subscriber(구독할_토픽이름, 구독할_메시지타입, 콜백_함수) 형태로 사용함.
+        #              콜백 함수는 메시지가 도착할 때마다 자동으로 실행되는 함수임.
 
+    # 'message' 토픽으로부터 새로운 메시지가 도착할 때마다 자동으로 호출되는 콜백(callback) 함수임.
+    # 'msg'라는 변수에 도착한 메시지 데이터가 'MyTopic' 형태로 통째로 담겨 이 함수로 전달됨.
     def sub_callback(self, msg: MyTopic):
-        rospy.loginfo(f"들어온 메세지 by myTopicPyub: {msg.first_name} {msg.age} {msg.score}")
+        # 도착한 메시지의 내용을 터미널에 출력함. (개발자가 확인하기 위함)
+        # 'msg.first_name', 'msg.age', 'msg.score' 와 같이 변수 이름으로 메시지 내용을 가져와 사용할 수 있음.
+        rospy.loginfo(f"들어온 메세지 by myTopicPub: {msg.first_name} {msg.age} {msg.score}")
+        # [보충 설명]: 받은 메시지 객체(msg)의 속성(first_name, age, score)에 직접 접근하여 데이터를 추출함.
 
+# 'main' 함수는 이 ROS 노드를 시작하고 전체 실행 로직을 담고 있음.
 def main():
+    # 'msub'이라는 이름으로 이 파이썬 스크립트가 ROS 노드로 작동하도록 초기화함.
+    # 'msub'은 ROS 시스템 내에서 이 노드를 식별하는 고유한 이름표 역할을 함.
     rospy.init_node('msub')
+    # [보충 설명]: 모든 ROS 노드는 rospy.init_node()를 호출하여 ROS 시스템에 자신을 등록해야 함.
+
+    # Msub 클래스의 설계도를 바탕으로 'node'라는 실제 객체를 만듦.
+    # 이 순간 Msub 클래스 내부의 '__init__' 함수가 실행되어 구독자(Subscriber)가 설정됨.
     node = Msub()
+    # [보충 설명]: 객체 생성 시 __init__ 메서드가 호출되어 구독 설정이 완료됨.
+
+    # ROS 시스템이 종료되지 않는 한 계속 대기하며 새로운 메시지가 도착하기를 기다림.
+    # 메시지가 도착하면 위에서 설정한 'sub_callback' 함수가 자동으로 호출됨.
+    # 이 'rospy.spin()' 함수가 없으면 노드가 초기화된 후 즉시 종료되어 메시지를 받을 수 없음.
     while not rospy.is_shutdown():
         rospy.spin()
+    # [보충 설명]: rospy.spin()은 이 노드가 콜백을 기다리는 동안 활성 상태를 유지하도록 하여,
+    #              메시지 수신과 같은 이벤트가 발생할 때 적절한 콜백 함수가 실행될 수 있도록 함.
 
+# 이 부분은 파이썬 스크립트가 직접 실행될 때만 main() 함수를 호출하도록 하는 표준 파이썬 관용구임.
+# 만약 다른 파이썬 스크립트에서 이 스크립트를 import해서 사용할 때는 main()이 자동으로 실행되지 않음.
 if __name__ == "__main__":
     try:
-        main()
+        main() # main 함수를 호출하여 노드를 시작함.
     except rospy.ROSInterruptException:
+        # ROS가 종료되거나 Ctrl+C 등으로 노드가 중단될 때 발생하는 'rospy.ROSInterruptException' 예외를 처리함.
+        # 이 예외는 노드가 정상적으로 종료될 때 발생하므로, 일반적으로 'pass'를 사용하여 아무런 오류 메시지 없이 조용히 종료되도록 함.
         pass
+
+# myTopicSub 파일 분석: 정보 수신자 (구독자 노드)
+# 이 파이썬 스크립트는 myTopicPub이 message 토픽을 통해 보내는 정보를 받아서 처리하는 역할을 함.
+# 마치 TV에서 방송국이 송출하는 뉴스를 시청하는 거랑 같음.
+# ROS에선 이렇게 정보를 수신하는 주체를 **구독자(Subscriber)**라고 부름.

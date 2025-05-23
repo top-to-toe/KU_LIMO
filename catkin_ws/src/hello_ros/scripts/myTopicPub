@@ -1,31 +1,94 @@
 #!/usr/bin/env python3
+# 쉬뱅(Shebang) 라인: 이 스크립트가 파이썬3 인터프리터로 실행되어야 함을 운영체제에 알려주는 역할임.
+# [보충 설명]: 리눅스나 유닉스 계열 운영체제에서 스크립트를 직접 실행 가능하게 할 때 사용됨.
 
 import rospy
+# 'rospy' 모듈을 가져옴. 이는 ROS에서 파이썬 언어로 노드(로봇 프로그램)를 만들 때 필요한 핵심 도구 상자임.
+# [보충 설명]: rospy는 ROS와 파이썬 코드를 연결해주는 다리 역할을 함.
+
 from hello_ros.msg import MyTopic
+# 우리가 만든 'MyTopic.msg' 파일에서 정의한 'MyTopic' 메시지 형태를 파이썬 코드에서 사용할 수 있도록 가져옴.
+# [보충 설명]: ROS는 .msg 파일을 자동으로 파이썬 클래스(여기서는 MyTopic)로 변환해 줌. 이 클래스를 import해서 사용하는 거임.
 
-
+# Mpub 이라는 이름의 클래스를 정의함.
+# 클래스는 관련된 데이터(변수)와 함수(메서드)를 묶어 놓은 '설계도' 같음.
 class Mpub:
     def __init__(self):
+        # '__init__' 메서드는 Mpub 클래스로부터 'mpub'이라는 객체를 만들 때 가장 먼저 실행되는 초기 설정 부분임.
+        # [보충 설명]: 객체 지향 프로그래밍에서 객체가 생성될 때 한 번만 실행되어 초기값을 설정하는 역할을 함.
+
+        # 1. 퍼블리셔(Publisher) 생성:
+        # 'message'라는 이름의 '토픽(Topic)'으로 메시지를 발행(전달)할 준비를 함.
+        # 'MyTopic' 메시지 형태를 사용하고, 'queue_size=10'은 메시지 전송이 밀릴 때 최대 10개의 메시지를 대기열에 저장한다는 의미임.
+        # '토픽'은 정보를 주고받는 채널(방송 채널)이라고 생각하면 쉬움.
         self.pub = rospy.Publisher('message', MyTopic, queue_size=10)
+        # [보충 설명]: rospy.Publisher(토픽이름, 메시지타입, 큐_사이즈) 형태로 사용함.
+        #              큐 사이즈가 작으면 데이터 손실이 발생할 수 있고, 너무 크면 메모리를 많이 차지할 수 있음.
+
+        # 2. 메시지 객체 생성:
+        # 'MyTopic' 약속에 따라 비어있는 데이터 묶음('MyTopic' 타입의 객체)을 하나 만듦.
+        # 이제 여기에 값을 채워 넣을 거임.
         self.data = MyTopic()
+        # [보충 설명]: 이 MyTopic() 객체가 우리가 정의한 first_name, age, score 변수를 가지고 있음.
+
+        # 3. 타이머 설정:
+        # 0.33초(330_000_000 나노초, 즉 0.33초)마다 'self.print_hello' 함수를 반복해서 실행하도록 타이머를 설정함.
+        # 이는 일정한 시간 간격으로 메시지를 계속 보내기 위함임.
         rospy.Timer(rospy.Duration(nsecs=330_000_000), self.print_hello)
+        # [보충 설명]: rospy.Duration은 시간 단위를 나타내며, nsecs는 나노초(10억분의 1초) 단위로 시간을 지정할 때 사용함.
+        #              1초 = 1,000,000,000 나노초임.
 
+    # 타이머에 의해 주기적으로 호출되는 콜백(callback) 함수임.
+    # '_event'는 타이머가 호출될 때 자동으로 전달되는 인자인데, 이 함수에서는 사용하지 않으므로 '_'를 붙여 이름을 지었음.
     def print_hello(self, _event):
-        self.data.first_name = "Lee"
-        self.data.age = 37
-        self.data.score = 33
+        # self.data 객체의 각 변수에 데이터를 할당함.
+        self.data.first_name = "Lee" # MyTopic 메시지의 first_name 변수에 "Lee"라는 글자를 넣음.
+        self.data.age = 37           # MyTopic 메시지의 age 변수에 37이라는 숫자를 넣음.
+        self.data.score = 33         # MyTopic 메시지의 score 변수에 33이라는 숫자를 넣음.
+        # [보충 설명]: MyTopic.msg 파일에서 정의한 변수 이름에 직접 접근하여 값을 설정함.
+
+        # 현재 보낼 메시지의 내용을 터미널에 출력함. (개발자가 실행 중 확인하기 위함)
+        # rospy.loginfo는 ROS에서 정보성 메시지를 터미널과 ROS의 로깅 시스템에 출력하는 표준 방식임.
         rospy.loginfo(f"name : {self.data.first_name}, age {self.data.age}, score : {self.data.score}")
+        # [보충 설명]: f-string (f"...")을 사용하여 변수 값을 문자열 안에 쉽게 삽입하여 출력함.
+
+        # 준비된 데이터(self.data)를 'message' 토픽을 통해 발행(전달)함.
+        # 이 명령어를 통해 실제로 데이터가 ROS 시스템 내로 전송됨.
         self.pub.publish(self.data)
+        # [보충 설명]: .publish() 메서드는 생성된 Publisher 객체를 통해 데이터를 전송하는 역할을 함.
 
 
+# 'main' 함수는 이 ROS 노드를 시작하고 전체 실행 로직을 담고 있음.
 def main():
+    # 'mpub'이라는 이름으로 이 파이썬 스크립트가 ROS 노드로 작동하도록 초기화함.
+    # 'mpub'은 ROS 시스템 내에서 이 노드를 식별하는 고유한 이름표 역할을 함.
     rospy.init_node('mpub')
+    # [보충 설명]: 모든 ROS 노드는 rospy.init_node()를 호출하여 초기화되어야 함. 그렇지 않으면 ROS 시스템에 인식되지 않음.
+
+    # Mpub 클래스의 설계도를 바탕으로 'node'라는 실제 객체를 만듦.
+    # 이 순간 Mpub 클래스 내부의 '__init__' 함수가 실행되어 발행자(Publisher)와 타이머가 설정됨.
     node = Mpub()
+    # [보충 설명]: 클래스의 객체를 생성하는 것은 설계도(클래스)대로 실제 물건(객체)을 만드는 거랑 같음.
+
+    # ROS 시스템이 종료되지 않는 한 계속 대기하며 콜백 함수('print_hello')가 호출되기를 기다림.
+    # 이 'rospy.spin()' 함수가 없으면 노드가 초기화된 후 즉시 종료되어 아무 일도 하지 않음.
     while not rospy.is_shutdown():
         rospy.spin()
+    # [보충 설명]: rospy.is_shutdown()은 ROS 시스템이 종료 신호를 받았는지 확인하는 함수임.
+    #              rospy.spin()은 파이썬 ROS 노드가 콜백 함수가 호출되기를 기다리며 대기 상태를 유지하게 함.
+    #              이는 다른 이벤트(예: 메시지 수신, 타이머)가 발생할 때까지 노드가 활성 상태를 유지하도록 해줌.
 
+# 이 부분은 파이썬 스크립트가 직접 실행될 때만 main() 함수를 호출하도록 하는 표준 파이썬 관용구임.
+# 다른 파일에서 이 스크립트를 import해서 사용할 때는 main()이 실행되지 않음.
 if __name__ == "__main__":
     try:
-        main()
+        main() # main 함수를 호출하여 노드를 시작함.
     except rospy.ROSInterruptException:
+        # ROS가 종료되거나 Ctrl+C 등으로 노드가 중단될 때 발생하는 'rospy.ROSInterruptException' 예외를 처리함.
+        # 보통은 이 예외가 발생하면 노드가 아무런 오류 메시지 없이 조용히 종료되도록 'pass'를 사용하여 아무 작업도 하지 않음.
         pass
+
+# myTopicPub 파일 분석: 정보 전달자 (퍼블리셔 노드)
+# 이 파이썬 스크립트는 MyTopic.msg에서 정의한 약속에 따라 정보를 만들어서 다른 로봇 프로그램(노드)들에게 전달(발행)하는 역할을 함.
+# 마치 방송국에서 뉴스를 만들어서 송출하듯이, 이 노드는 데이터를 만들어 ROS 시스템에 내보냄.
+# ROS에선 이렇게 정보를 전달하는 주체를 **퍼블리셔(Publisher)**라고 부름.
