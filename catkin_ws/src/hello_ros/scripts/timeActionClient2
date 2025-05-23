@@ -1,43 +1,94 @@
 #!/usr/bin/env python3
+# 쉬뱅(Shebang) 라인: 이 스크립트가 파이썬3 인터프리터로 실행되어야 함을 운영체제에 알려주는 역할임.
 
-# rosrun hello_ros timeActionServer
-# rosrun hello_ros timeActionClient2
+# 이 주석들은 이 스크립트들을 ROS에서 실행하는 명령어를 예시로 보여줌.
+# rosrun hello_ros timeActionServer   # 액션 서버 노드를 먼저 실행해야 함.
+# rosrun hello_ros timeActionClient2 # 액션 클라이언트 노드를 실행함.
 
 import actionlib
+# ROS 액션 기능을 사용하기 위한 파이썬 라이브러리를 가져옴.
+
 import rospy
+# 'rospy' 모듈을 가져옴. ROS 파이썬 노드를 만들기 위한 핵심 도구 상자임.
+
 from hello_ros.msg import TimeWaitAction, TimeWaitFeedback, TimeWaitGoal, TimeWaitResult
+# 우리가 만든 'TimeWait.action' 파일에서 정의한 액션 관련 클래스들을 가져옴.
 
-
+# ActionClient 라는 이름의 클래스를 정의함.
+# 이 클래스는 액션 클라이언트 노드의 '설계도'임.
 class ActionClient:
     def __init__(self):
+        # '__init__' 메서드는 ActionClient 객체를 만들 때 가장 먼저 실행되는 초기 설정 부분임.
+
+        # 1. SimpleActionClient 생성:
+        # 'timer_action'이라는 이름의 액션 서버에 요청을 보낼 '액션 클라이언트'를 만듦.
         self.client = actionlib.SimpleActionClient('timer_action', TimeWaitAction)
-        rospy.loginfo("action 클라이언트가 요청 되었습니다.")
+
+        rospy.loginfo("action 클라이언트가 요청 되었습니다.") # 클라이언트가 준비됐음을 로그로 알림.
+
+        # 2. 액션 서버가 준비될 때까지 대기:
+        # 액션 서버('timer_action')가 ROS 시스템에 등록될 때까지 기다림.
         self.client.wait_for_server() # 서버 요청을 기다림.
 
-        goal = TimeWaitGoal()
-        goal.time_to_wait = 5.0
-        self.client.send_goal(goal, feedback_cb=self.feedback_cb, done_cb=self.done_cb) # 서버에 goal 을 요청함!
+        # 3. 목표(Goal) 생성 및 전송 (비동기 방식):
+        goal = TimeWaitGoal() # 'TimeWaitGoal' 타입의 빈 목표 객체를 만듦.
+        goal.time_to_wait = 5.0 # 대기할 시간을 5.0초로 설정함.
+        # 목표를 서버에 요청하면서, 피드백이 올 때 호출될 콜백 함수(feedback_cb)와
+        # 액션이 완료될 때 호출될 콜백 함수(done_cb)를 함께 지정함.
+        self.client.send_goal(goal, feedback_cb=self.feedback_cb, done_cb=self.done_cb) # 서버에 goal 을 요청함.
+        # [보충 설명]: send_goal() 함수는 목표를 보낸 즉시 반환되므로 클라이언트 노드는 멈추지 않고 계속 실행됨.
+        #              피드백이나 최종 결과는 콜백 함수를 통해 비동기적으로 처리됨.
 
+    # 액션이 완료되었을 때 호출되는 콜백(callback) 함수임.
+    # 'state'는 액션의 최종 상태(예: SUCCEEDED, ABORTED, PREEMPTED)를 나타내고,
+    # 'result'는 액션의 최종 결과 데이터('TimeWaitResult' 타입)를 담고 있음.
     def done_cb(self, state , result: TimeWaitResult):
+        # 1. 액션 최종 상태 확인 및 결과 출력:
+        if state == actionlib.GoalStatus().SUCCEEDED: # 액션이 성공적으로 완료됐으면
+            rospy.loginfo(f"Action finished : {state} SUCCEEDED") # 성공 상태를 로그로 출력함.
+            rospy.loginfo(f"Result : 경과 시간 {result.time_elapsed}, 피드백 횟수 {result.updates_sent}") # 최종 결과를 로그로 출력함.
+        if state == actionlib.GoalStatus().ABORTED: # 액션이 도중에 실패했으면
+            rospy.loginfo(f"Action finished : {state} aborted") # 실패 상태를 로그로 출력함.
+        if state == actionlib.GoalStatus().PENDING: # 액션이 아직 시작되지 않고 대기 중이면
+            rospy.loginfo(f"Action finished : {state} pending..") # 대기 상태를 로그로 출력함.
+        # [보충 설명]: actionlib.GoalStatus()는 액션의 여러 상태를 나타내는 상수를 제공함.
 
-        if state == actionlib.GoalStatus().SUCCEEDED:
-            rospy.loginfo(f"Action finished : {state} SUCCEEDED")
-            rospy.loginfo(f"Result : 경과 시간 {result.time_elapsed}, 피드백 횟수 {result.updates_sent}")
-        if state == actionlib.GoalStatus().ABORTED:
-            rospy.loginfo(f"Action finished : {state} aborted")
-        if state == actionlib.GoalStatus().PENDING:
-            rospy.loginfo(f"Action finished : {state} pending..")
-
+    # 액션 서버로부터 중간 피드백(Feedback)이 올 때마다 호출되는 콜백(callback) 함수임.
+    # 'feedback' 변수에는 서버가 보낸 피드백 데이터('TimeWaitFeedback' 타입)가 담겨 있음.
     def feedback_cb(self, feedback: TimeWaitFeedback):
+        # 피드백 내용(경과 시간, 남은 시간)을 로그로 출력함.
         rospy.loginfo(f"경과시간 : {feedback.time_elapsed}, 남은 시간 : {feedback.time_remaining}")
 
+# 'main' 함수는 이 ROS 노드를 시작하고 전체 실행 로직을 담고 있음.
 def main():
+    # 'action_client'라는 이름으로 이 파이썬 스크립트가 ROS 노드로 작동하도록 초기화함.
     rospy.init_node("action_client")
+
+    # ActionClient 클래스의 설계도를 바탕으로 'node'라는 실제 객체를 만듦.
+    # 이 순간 '__init__' 함수가 실행되어 액션 요청이 서버로 보내지고 콜백 함수들이 준비됨.
     node = ActionClient()
+
     try:
+        # ROS 시스템이 종료되지 않는 한 계속 대기하며 액션 서버로부터의 피드백이나 완료 신호를 기다림.
         rospy.spin()
+        # [보충 설명]: rospy.spin()은 노드가 종료되지 않고 계속 실행되도록 유지하며, 피드백/완료 콜백이 호출될 때까지 대기함.
     except rospy.ROSInterruptException:
+        # ROS가 종료되거나 Ctrl+C 등으로 노드가 중단될 때 발생하는 예외를 처리함.
         pass
 
+# 이 부분이 파이썬 스크립트가 직접 실행될 때만 main() 함수를 호출하도록 하는 표준 파이썬 관용구임.
 if __name__ == "__main__":
-    main()
+    main() # main 함수를 호출하여 노드를 시작함.
+
+# timeActionClient2 파일 분석: 비동기적 액션 요청자 (액션 클라이언트 노드 - 비동기)
+# 이 파이썬 스크립트는 `TimeWait.action`에서 정의한 약속에 따라 **액션 서버에 목표를 요청하고, 서버가 작업을 진행하는 동안 중간 피드백을 실시간으로 받으며,
+# 작업 완료 시 최종 결과와 함께 알려주는 역할**을 함.
+# 마치 식당에서 음식을 주문하고 다른 일을 하면서 중간중간 "지금 요리 중입니다" 같은 진행 상황을 보고받고,
+# 다 되면 "음식 나왔습니다!"라는 알림을 받는 거랑 같음.
+# **비동기(Asynchronous) 방식**이라서 목표를 보낸 후 클라이언트 노드가 멈추지 않고 다른 작업을 동시에 수행할 수 있음.
+
+    # **`timeActionClient2` (비동기):**
+    #     * 액션 서버에 5.0초 대기 목표를 보냄.
+    #     * 목표를 보낸 즉시 **클라이언트 자신은 멈추지 않고 계속 다른 작업을 수행할 수 있음** (여기서는 `rospy.spin()`으로 대기).
+    #     * 서버가 작업을 진행하는 동안 주기적으로 **피드백(Feedback)이 오면 `feedback_cb` 함수가 호출**되어 실시간 진행 상황을 출력함.
+    #     * 서버가 작업을 완료하면 **`done_cb` 함수가 호출**되어 최종 결과(`TimeWaitResult`)와 상태를 처리하고 출력함.

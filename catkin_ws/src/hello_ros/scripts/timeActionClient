@@ -1,40 +1,89 @@
 #!/usr/bin/env python3
+# 쉬뱅(Shebang) 라인: 이 스크립트가 파이썬3 인터프리터로 실행되어야 함을 운영체제에 알려주는 역할임.
 
 import actionlib
+# ROS 액션 기능을 사용하기 위한 파이썬 라이브러리를 가져옴.
+
 import rospy
+# 'rospy' 모듈을 가져옴. ROS 파이썬 노드를 만들기 위한 핵심 도구 상자임.
+
 from hello_ros.msg import TimeWaitAction, TimeWaitFeedback, TimeWaitGoal, TimeWaitResult
+# 우리가 만든 'TimeWait.action' 파일에서 정의한 액션 관련 클래스들을 가져옴.
 
-
+# ActionClient 라는 이름의 클래스를 정의함.
+# 이 클래스는 액션 클라이언트 노드의 '설계도'임.
 class ActionClient:
     def __init__(self):
+        # '__init__' 메서드는 ActionClient 객체를 만들 때 가장 먼저 실행되는 초기 설정 부분임.
+
+        # 1. SimpleActionClient 생성:
+        # 'timer_action'이라는 이름의 액션 서버에 요청을 보낼 '액션 클라이언트'를 만듦.
+        # 'TimeWaitAction' 타입의 액션을 처리할 거임.
         self.client = actionlib.SimpleActionClient('timer_action', TimeWaitAction)
-        rospy.loginfo("action 클라이언트가 요청 되었습니다.")
+        # [보충 설명]: SimpleActionClient는 액션 클라이언트를 간편하게 구현할 수 있도록 해주는 actionlib의 클래스임.
+        #              (액션_이름, 액션_타입) 순으로 인자를 받음.
+
+        rospy.loginfo("action 클라이언트가 요청 되었습니다.") # 클라이언트가 준비됐음을 로그로 알림.
+
+        # 2. 액션 서버가 준비될 때까지 대기:
+        # 액션 서버('timer_action')가 ROS 시스템에 등록될 때까지 기다림.
         self.client.wait_for_server() # 서버 요청을 기다림.
+        # [보충 설명]: 클라이언트가 목표를 보내기 전에 서버가 먼저 실행되어 준비돼야 함. 이를 보장하기 위한 코드임.
 
-        goal = TimeWaitGoal()
-        goal.time_to_wait = 5.0
-        self.client.send_goal(goal) # 서버에 goal 을 요청함!
+        # 3. 목표(Goal) 생성 및 전송:
+        goal = TimeWaitGoal() # 'TimeWaitGoal' 타입의 빈 목표 객체를 만듦.
+        goal.time_to_wait = 5.0 # 대기할 시간을 5.0초로 설정함.
+        self.client.send_goal(goal) # 액션 서버에 이 목표를 요청함.
 
-        # 동기적 처리 코드 # result 가 올때 까지 계속 대기.
+        # 4. 동기적 처리 (결과가 올 때까지 대기):
+        # 서버에서 최종 결과가 올 때까지 최대 10초 동안 대기함.
+        # 'finished' 변수는 액션이 지정된 시간 안에 완료되었는지(True) 아닌지(False)를 저장함.
         finished = self.client.wait_for_result(rospy.Duration(10.0)) # type: ignore
+        # [보충 설명]: wait_for_result() 함수는 결과가 올 때까지 '블록킹(blocking)' 방식으로 대기함.
+        #              즉, 결과가 오거나 타임아웃될 때까지 다음 코드가 실행되지 않음.
+        #              type: ignore는 Pyright 같은 타입 체커에서 발생하는 경고를 무시하도록 지시하는 주석임.
 
-        if finished:
-            state = self.client.get_state()
-            result : TimeWaitResult= self.client.get_result() # type: ignore
-            rospy.loginfo(f"Action finished : {state}")
-            rospy.loginfo(f"Result : 경과 시간 {result.time_elapsed}, 피드백 횟수 {result.updates_sent}")
-        else:
-            rospy.loginfo(f"액션 서버가 완료하지 못함")
+        if finished: # 액션이 성공적으로 완료되었으면 (결과를 받았으면)
+            state = self.client.get_state() # 액션의 최종 상태(예: SUCCEEDED, ABORTED, PREEMPTED)를 가져옴.
+            result : TimeWaitResult= self.client.get_result() # type: ignore # 액션의 최종 결과 데이터를 가져옴.
+            rospy.loginfo(f"Action finished : {state}") # 액션의 최종 상태를 로그로 출력함.
+            rospy.loginfo(f"Result : 경과 시간 {result.time_elapsed}, 피드백 횟수 {result.updates_sent}") # 최종 결과를 로그로 출력함.
+        else: # 액션이 10초 안에 완료되지 못했으면 (타임아웃 등)
+            rospy.loginfo(f"액션 서버가 완료하지 못함") # 완료 실패 메시지를 로그로 출력함.
 
-        # 비동기적 처리 코드 ... callback...
+        # 비동기적 처리 코드 ... callback... (주석 처리됨)
+        # [보충 설명]: 이 주석은 이 파일이 동기적 처리 코드임을 강조하고, 비동기 처리는 다른 파일에서 다룰 것임을 암시함.
 
+# 'main' 함수는 이 ROS 노드를 시작하고 전체 실행 로직을 담고 있음.
 def main():
+    # 'action_client'라는 이름으로 이 파이썬 스크립트가 ROS 노드로 작동하도록 초기화함.
     rospy.init_node("action_client")
+
+    # ActionClient 클래스의 설계도를 바탕으로 'node'라는 실제 객체를 만듦.
+    # 이 순간 '__init__' 함수가 실행되어 액션 요청이 서버로 보내지고 결과가 처리됨.
     node = ActionClient()
+
     try:
+        # ROS 시스템이 종료되지 않는 한 계속 대기함.
+        # 여기서는 이미 __init__에서 동기적으로 요청을 보냈기 때문에, 추가적으로 할 일은 없지만 노드 유지를 위해 필요함.
         rospy.spin()
+        # [보충 설명]: rospy.spin()은 노드가 종료되지 않고 계속 실행되도록 유지함.
     except rospy.ROSInterruptException:
+        # ROS가 종료되거나 Ctrl+C 등으로 노드가 중단될 때 발생하는 예외를 처리함.
         pass
 
+# 이 부분이 파이썬 스크립트가 직접 실행될 때만 main() 함수를 호출하도록 하는 표준 파이썬 관용구임.
 if __name__ == "__main__":
-    main()
+    main() # main 함수를 호출하여 노드를 시작함.yy
+
+# timeActionClient 파일 분석: 동기적 액션 요청자 (액션 클라이언트 노드 - 동기)
+# 이 파이썬 스크립트는 TimeWait.action에서 정의한 약속에 따라 액션 서버에 목표를 요청하고,
+# 서버가 작업을 완료할 때까지 기다린 다음 최종 결과만 받는 역할을 함.
+# 마치 식당에서 음식을 주문하고 다 될 때까지 다른 일 안 하고 계속 기다리는 거랑 같음.
+# 동기(Synchronous) 방식이라서 서버의 작업이 끝날 때까지 클라이언트 노드는 멈춰서 기다림.
+
+    # **`timeActionClient` (동기):**
+    #     * 액션 서버에 5.0초 대기 목표를 보냄.
+    #     * 서버가 이 액션을 완전히 끝낼 때까지 **클라이언트 자신은 멈춰서 기다림**.
+    #     * 액션이 완료되면 (또는 타임아웃되면) 최종 결과(`TimeWaitResult`)와 상태를 한 번에 받아서 출력함.
+    #     * 중간 피드백은 받을 수 없음.

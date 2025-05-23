@@ -1,57 +1,113 @@
 #!/usr/bin/env python3
+# 쉬뱅(Shebang) 라인: 이 스크립트가 파이썬3 인터프리터로 실행되어야 함을 운영체제에 알려주는 역할임.
 
 import actionlib
+# ROS 액션 기능을 사용하기 위한 파이썬 라이브러리를 가져옴.
+# [보충 설명]: actionlib은 ROS에서 액션 통신을 쉽게 구현할 수 있도록 도와주는 강력한 도구 모음임.
+
 import rospy
+# 'rospy' 모듈을 가져옴. ROS 파이썬 노드를 만들기 위한 핵심 도구 상자임.
+
 from hello_ros.msg import TimeWaitAction, TimeWaitFeedback, TimeWaitGoal, TimeWaitResult
+# 우리가 만든 'TimeWait.action' 파일에서 정의한 액션 관련 클래스들을 가져옴.
+# 'TimeWaitAction'은 액션 전체의 타입이고, 'TimeWaitGoal'은 목표 데이터 타입,
+# 'TimeWaitFeedback'은 피드백 데이터 타입, 'TimeWaitResult'는 결과 데이터 타입임.
 
-
+# ActionServer 라는 이름의 클래스를 정의함.
+# 이 클래스는 액션 서버 노드의 '설계도'임.
 class ActionServer:
     def __init__(self):
+        # '__init__' 메서드는 ActionServer 객체를 만들 때 가장 먼저 실행되는 초기 설정 부분임.
+
+        # 1. SimpleActionServer 생성 및 시작:
+        # 'timer_action'이라는 이름의 액션 서버를 만듦.
+        # 'TimeWaitAction' 타입의 액션 목표를 받을 거고, 목표가 오면 'self.callback' 함수를 호출해서 처리할 거임.
+        # 마지막 'False'는 액션 서버가 생성되자마자 자동으로 시작할지 여부인데, 여기선 수동으로 시작하도록 설정함.
         self.server = actionlib.SimpleActionServer(
             "timer_action", TimeWaitAction, self.callback, False
         )
-        self.server.start()
-        rospy.loginfo("action 서버가 시작 되었습니다.")
+        # [보충 설명]: SimpleActionServer는 액션 서버를 간편하게 구현할 수 있도록 해주는 actionlib의 클래스임.
+        #              (액션_이름, 액션_타입, 목표_처리_콜백, 자동_시작_여부) 순으로 인자를 받음.
 
+        self.server.start() # 위에서 생성한 액션 서버를 실제로 시작함.
+        rospy.loginfo("action 서버가 시작 되었습니다.") # 서버가 시작됐음을 로그로 알림.
+
+    # 클라이언트로부터 액션 목표(Goal)가 들어올 때마다 호출되는 콜백(callback) 함수임.
+    # 'goal' 변수에는 클라이언트가 보낸 목표 데이터('TimeWaitGoal' 타입)가 담겨 있음.
     def callback(self, goal: TimeWaitGoal):
-        # goal 메세지 전달!!
-        feedback = TimeWaitFeedback()
-        result = TimeWaitResult()
-        rate = rospy.Rate(1)  # 1Hz
-        time_elapsed = 0.0
-        updates = 0
+        # goal 메세지 전달!! (주석 처리됨)
+        # [보충 설명]: 이 주석은 아마도 목표 메시지를 받았음을 나타내려 한 것 같음.
 
-        rospy.loginfo(f" {goal.time_to_wait} 초 동안 대기를 실행하겠음")
+        feedback = TimeWaitFeedback() # 클라이언트에게 보낼 빈 피드백 객체를 만듦.
+        result = TimeWaitResult()     # 클라이언트에게 보낼 빈 결과 객체를 만듦.
 
+        rate = rospy.Rate(1)  # 1Hz (1초에 한 번) 주기로 반복하기 위한 'Rate' 객체를 만듦.
+        # [보충 설명]: rospy.Rate는 루프의 실행 주기를 제어하여 CPU 사용률을 효율적으로 관리할 수 있게 해줌.
+
+        time_elapsed = 0.0 # 현재까지 경과된 시간을 저장할 변수를 0.0으로 초기화함.
+        updates = 0        # 피드백을 보낸 횟수를 저장할 변수를 0으로 초기화함.
+
+        rospy.loginfo(f" {goal.time_to_wait} 초 동안 대기를 실행하겠음") # 목표 대기 시간을 로그로 알림.
+
+        # 목표 시간만큼 대기하는 루프를 시작함.
         while time_elapsed < goal.time_to_wait:
+            # 1. 취소 요청(Preempt Request) 확인:
+            # 만약 클라이언트가 액션 취소를 요청했거나, ROS 시스템이 종료 신호를 받으면 루프를 빠져나감.
             if self.server.preempt_request or rospy.is_shutdown():
-                rospy.loginfo("TimeWait 액션 이 프리 엠티 되었다.")
-                self.server.set_preempted()
-                return
+                rospy.loginfo("TimeWait 액션 이 프리 엠티 되었다.") # 액션이 취소됐음을 로그로 알림.
+                self.server.set_preempted() # 액션 서버의 상태를 '취소됨(preempted)'으로 설정하고 클라이언트에게 알림.
+                return # 콜백 함수를 종료하고 더 이상 작업을 진행하지 않음.
+            # [보충 설명]: preempt_request는 클라이언트가 액션을 취소했는지 확인하는 액션 서버의 속성임.
+            #              rospy.is_shutdown()은 ROS 노드가 종료 중인지 확인하는 함수임.
 
-            time_elapsed += 1.0
-            feedback.time_elapsed = time_elapsed
-            feedback.time_remaining = goal.time_to_wait - time_elapsed
-            self.server.publish_feedback(feedback)  # feedback 메세지를 보냄.
-            updates += 1
-            rate.sleep()
+            # 2. 시간 업데이트 및 피드백 전송:
+            time_elapsed += 1.0 # 경과 시간을 1초 증가시킴.
+            feedback.time_elapsed = time_elapsed # 피드백 객체에 현재 경과 시간을 저장함.
+            feedback.time_remaining = goal.time_to_wait - time_elapsed # 남은 시간을 계산해서 피드백 객체에 저장함.
+            self.server.publish_feedback(feedback)  # 피드백 메세지를 클라이언트에게 보냄.
+            # [보충 설명]: publish_feedback()을 통해 액션 진행 상황을 클라이언트에게 실시간으로 알려줄 수 있음.
+            updates += 1 # 피드백 보낸 횟수를 1 증가시킴.
+            rate.sleep() # 설정된 주기(여기선 1초)에 맞춰 잠시 대기함.
 
-        # result 보낼 준비
-        result.time_elapsed = time_elapsed
-        result.updates_sent = updates
-        rospy.loginfo("TimeWait 성공적을 완료!")
-        self.server.set_succeeded(result)  # result 보냄
-        # self.server.set_aborted(result)
+        # 3. 액션 성공 처리 및 결과 전송:
+        # 루프가 종료되면, 목표 시간만큼 대기 완료했음을 의미함.
+        result.time_elapsed = time_elapsed # 최종 경과 시간을 결과 객체에 저장함.
+        result.updates_sent = updates # 총 피드백 횟수를 결과 객체에 저장함.
+        rospy.loginfo("TimeWait 성공적을 완료!") # 액션이 성공적으로 완료됐음을 로그로 알림.
+        self.server.set_succeeded(result)  # 액션 서버의 상태를 '성공(succeeded)'으로 설정하고 클라이언트에게 결과(result)를 보냄.
+        # self.server.set_aborted(result) # (주석 처리됨) 만약 액션이 실패했을 경우, 이 함수를 호출하여 '실패(aborted)' 상태로 설정할 수 있음.
 
-
+# 'main' 함수는 이 ROS 노드를 시작하고 전체 실행 로직을 담고 있음.
 def main():
+    # 'action_server'라는 이름으로 이 파이썬 스크립트가 ROS 노드로 작동하도록 초기화함.
     rospy.init_node("action_server")
+
+    # ActionServer 클래스의 설계도를 바탕으로 'node'라는 실제 객체를 만듦.
+    # 이 순간 '__init__' 함수가 실행되어 액션 서버가 생성되고 시작됨.
     node = ActionServer()
+
     try:
+        # ROS 시스템이 종료되지 않는 한 계속 대기하며 액션 목표를 기다림.
+        # 목표가 오면 'callback' 함수가 자동으로 호출됨.
         rospy.spin()
+        # [보충 설명]: rospy.spin()은 파이썬 ROS 노드가 활성 상태를 유지하며 액션 목표나 다른 콜백이 호출되기를 기다리도록 함.
     except rospy.ROSInterruptException:
+        # ROS가 종료되거나 Ctrl+C 등으로 노드가 중단될 때 발생하는 예외를 처리함.
         pass
 
-
+# 이 부분이 파이썬 스크립트가 직접 실행될 때만 main() 함수를 호출하도록 하는 표준 파이썬 관용구임.
 if __name__ == "__main__":
-    main()
+    main() # main 함수를 호출하여 노드를 시작함.
+
+# timeActionServer 파일 분석: 액션 수행자 (액션 서버 노드)
+# 이 파이썬 스크립트는 TimeWait.action에서 정의한 약속에 따라 다른 노드로부터 액션 목표(Goal)를 받아서 처리하고,
+# 그 과정에서 중간 피드백(Feedback)을 보내며, 작업이 완료되면 최종 결과(Result)를 돌려주는 역할을 함.
+# 필요하다면 클라이언트의 취소 요청도 처리할 수 있음.
+
+    # timeActionServer 노드는 timer_action이라는 이름으로 액션 서비스를 제공함.
+    # 클라이언트로부터 특정 시간(goal.time_to_wait) 동안 기다려달라는 **목표(Goal)**를 받으면,
+    # 1초마다 진행 상황(time_elapsed, time_remaining)을 **피드백(Feedback)**으로 클라이언트에게 알려줌.
+    # 기다리는 도중에 클라이언트가 취소 요청을 보내면 즉시 작업을 중단하고 취소됨(Preempted) 상태를 알림.
+    # 성공적으로 목표 시간만큼 대기하면,
+    # 총 경과 시간(result.time_elapsed)과 보낸 피드백 횟수(result.updates_sent)를 담은 **결과(Result)**를 클라이언트에게 보내고 성공(Succeeded) 상태를 알림.
+    # 이 노드는 오래 걸리는 비동기 작업에 대한 ROS 액션 통신의 서버 측 구현을 보여줌.
