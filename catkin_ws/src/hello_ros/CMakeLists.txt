@@ -43,7 +43,6 @@ generate_messages(
   actionlib_msgs
 )
 
-
 catkin_package()
 
 catkin_install_python(PROGRAMS
