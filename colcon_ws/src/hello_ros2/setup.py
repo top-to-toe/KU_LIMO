@@ -23,8 +23,8 @@ setup(
     ],
     install_requires=["setuptools"],
     zip_safe=True,
-    maintainer="aa",
-    maintainer_email="freshmea@naver.com",
+    maintainer="lee",
+    maintainer_email="hansollee333@gmail.com",
     description="TODO: Package description",
     license="TODO: License declaration",
     tests_require=["pytest"],
@@ -38,11 +38,7 @@ setup(
             "simple_service_server2 = hello_ros2.simple_service_server2:main",
             "simple_service_client = hello_ros2.simple_service_client:main",
             "simple_parameter = hello_ros2.simple_parameter:main",
-            "change_color_client = hello_ros2.change_color_client:main",
-            "my_topic_pub = hello_ros2.my_topic_pub:main",
-            "add_server = hello_ros2.add_server:main",
-            "action_server = hello_ros2.action_server:main",
-            "action_client = hello_ros2.action_client:main",
+            "change_color_client = hello_ros2.change_color_client:main"
         ],
     },
 )
