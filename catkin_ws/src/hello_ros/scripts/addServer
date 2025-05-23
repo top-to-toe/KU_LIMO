@@ -1,54 +1,121 @@
 #!/usr/bin/env python3
+# 쉬뱅(Shebang) 라인: 이 스크립트가 파이썬3 인터프리터로 실행되어야 함을 운영체제에 알려주는 역할임.
 
 import threading
+# 파이썬에서 쓰레드(Thread)를 사용하기 위한 모듈을 가져옴.
+# [보충 설명]: 쓰레드는 프로그램 안에서 여러 작업을 동시에 처리할 수 있게 해주는 기능임. 여기선 서비스 요청 처리를 '메인 작업'과 분리해 동시에 진행하는 것처럼 보이게 함.
+
 import time
+# 시간과 관련된 함수들을 사용하기 위한 모듈을 가져옴.
+# [보충 설명]: 여기선 서비스 처리 시간을 시뮬레이션하기 위해 잠시 대기하는 데 사용됨.
 
 import rospy
+# 'rospy' 모듈을 가져옴. ROS 파이썬 노드를 만들기 위한 핵심 도구 상자임.
+
 from hello_ros.srv import AddTwoInts, AddTwoIntsRequest, AddTwoIntsResponse
+# 우리가 만든 'AddTwoInts.srv' 파일에서 정의한 서비스 관련 클래스들을 가져옴.
+# 'AddTwoInts'는 서비스 전체의 타입이고, 'AddTwoIntsRequest'는 요청 데이터의 타입, 'AddTwoIntsResponse'는 응답 데이터의 타입임.
 
-
+# ServiceServer 라는 이름의 클래스를 정의함.
+# 이 클래스는 서비스 서버 노드의 '설계도'임.
 class ServiceServer:
     def __init__(self):
+        # '__init__' 메서드는 ServiceServer 객체를 만들 때 가장 먼저 실행되는 초기 설정 부분임.
+
+        # 1. 서비스 서버(Service Server) 생성 및 등록:
+        # 'add_two_int'라는 이름의 서비스(서비스 채널)를 만듦.
+        # 이 서비스는 'AddTwoInts' 타입의 요청을 받을 거고, 요청이 오면 'self.callback' 함수를 호출해서 처리할 거임.
+        # [보충 설명]: rospy.Service(서비스_이름, 서비스_타입, 콜백_함수) 형태로 사용함.
+        #              서비스 이름은 클라이언트가 요청할 때 사용할 이름임.
         self.srv = rospy.Service('add_two_int', AddTwoInts, self.callback)
+
+        # 2. 상태 출력 타이머 설정:
+        # 0.5초(500_000_000 나노초)마다 'self.print_state' 함수를 반복해서 실행하도록 타이머를 설정함.
+        # 이는 서비스 처리 중에도 메인 쓰레드가 잘 동작하고 있음을 보여주기 위함임.
         rospy.Timer(rospy.Duration(nsecs=500_000_000), self.print_state)
 
+    # 클라이언트로부터 서비스 요청이 들어올 때마다 호출되는 콜백(callback) 함수임.
+    # 'request' 변수에는 클라이언트가 보낸 요청 데이터('AddTwoIntsRequest' 타입)가 담겨 있음.
     def callback(self, request: AddTwoIntsRequest):
+        # 1. 응답 객체 생성:
+        # 클라이언트에게 돌려줄 빈 응답 객체('AddTwoIntsResponse' 타입)를 만듦.
         response = AddTwoIntsResponse()
+
+        # 2. 서비스 처리 로직을 별도의 쓰레드에서 실행:
+        # 'self.async_service_hd' 함수를 별도의 쓰레드로 실행하도록 설정함.
+        # 'args'에 요청 데이터와 응답 객체를 인자로 전달함.
         thread = threading.Thread(target=self.async_service_hd, args=(request, response))
-        thread.start()
-        thread.join()
+        # [보충 설명]: 서비스 콜백 함수 안에서 시간이 오래 걸리는 작업을 처리하면, 다른 서비스 요청이나 노드 전체의 동작이 멈출 수 있음.
+        #              이를 막기 위해 오래 걸리는 작업(async_service_hd)을 별도의 쓰레드에서 비동기적으로 처리하는 방식을 사용한 거임.
+        thread.start() # 쓰레드 시작
+        thread.join()  # 쓰레드가 끝날 때까지 메인 쓰레드는 기다림 (여기서는 동기적으로 동작함)
+        # [보충 설명]: thread.join() 때문에 사실상 이 코드에서는 서비스 요청이 동기적으로 처리됨 (요청이 끝날 때까지 기다림).
+        #              만약 thread.join()이 없으면 비동기적으로 동작하여 응답이 바로 돌아가지만, 실제 처리 결과는 나중에 채워질 수 있음.
+        #              이 예제에서는 쓰레드를 사용했지만, 결과를 기다려야 하므로 동기적으로 작동하도록 구현한 예시임.
+
+        # 3. 응답 반환:
+        # 처리된 결과가 담긴 응답 객체를 클라이언트에게 반환함.
         return response
 
+    # 서비스 요청을 실제 비동기적으로(별도의 쓰레드에서) 처리하는 함수임.
+    # 이 함수가 서비스의 핵심 로직을 담당함.
     def async_service_hd(self, request: AddTwoIntsRequest, response: AddTwoIntsResponse):
         # 서버가 처리하는 코드 ....
-        rospy.loginfo("서비스 처리 시작")
+        rospy.loginfo("서비스 처리 시작") # 서비스 처리가 시작됐음을 로그로 알림.
 
-        if request.op == "plus":
-            response.result = request.a + request.b
-            response.message = "처리 성공!"
-            response.success = True
-        elif request.op == "minus":
-            response.result = request.a - request.b
-            response.message = "처리 성공!"
-            response.success = True
-        else:
-            response.result = 0
-            response.message = "처리 할 수 없는 op 코드"
-            response.success = False
+        # 1. 요청받은 'op' 값에 따라 다른 연산 수행:
+        if request.op == "plus": # 만약 요청받은 연산(op)이 "plus"면 덧셈을 수행함.
+            response.result = request.a + request.b # 두 숫자를 더해서 결과를 응답 객체에 저장함.
+            response.message = "처리 성공!" # 성공 메시지를 응답 객체에 저장함.
+            response.success = True # 성공 여부를 True로 설정함.
+        elif request.op == "minus": # 만약 요청받은 연산(op)이 "minus"면 뺄셈을 수행함.
+            response.result = request.a - request.b # 두 숫자를 빼서 결과를 응답 객체에 저장함.
+            response.message = "처리 성공!" # 성공 메시지를 응답 객체에 저장함.
+            response.success = True # 성공 여부를 True로 설정함.
+        else: # "plus"도 "minus"도 아닌 다른 연산자면, 처리할 수 없다고 알림.
+            response.result = 0 # 결과는 0으로 설정함.
+            response.message = "처리 할 수 없는 op 코드" # 오류 메시지를 응답 객체에 저장함.
+            response.success = False # 성공 여부를 False로 설정함.
 
-        time.sleep(5)
-        rospy.loginfo("서비스 처리 끝")
+        time.sleep(5) # 서비스 처리 중임을 시뮬레이션하기 위해 5초 동안 프로그램을 잠시 멈춤.
+        # [보충 설명]: 실제 로봇 시스템에서는 이 부분에 복잡한 계산이나 로봇 팔 동작 같은 시간이 걸리는 작업이 들어감.
+        rospy.loginfo("서비스 처리 끝") # 서비스 처리가 끝났음을 로그로 알림.
 
+    # 0.5초마다 호출되는 타이머 콜백 함수임.
+    # 메인 쓰레드가 계속 작동하고 있음을 보여주기 위한 용도임.
     def print_state(self, _evnet):
         rospy.loginfo("main 쓰레드...")
 
+# 'main' 함수는 이 ROS 노드를 시작하고 전체 실행 로직을 담고 있음.
 def main():
+    # 'service_server'라는 이름으로 이 파이썬 스크립트가 ROS 노드로 작동하도록 초기화함.
+    # 이 이름은 ROS 시스템 내에서 이 노드를 식별하는 고유한 이름표 역할을 함.
     rospy.init_node("service_server")
+
+    # ServiceServer 클래스의 설계도를 바탕으로 'noe'라는 실제 객체를 만듦.
+    # 이 순간 '__init__' 함수가 실행되어 서비스 서버와 타이머가 설정됨.
     noe = ServiceServer()
+
     try:
+        # ROS 시스템이 종료되지 않는 한 계속 대기하며 서비스 요청을 기다림.
+        # 요청이 오면 'callback' 함수가 자동으로 호출됨.
         rospy.spin()
+        # [보충 설명]: rospy.spin()은 파이썬 ROS 노드가 서비스 요청이나 다른 콜백이 호출되기를 기다리며 대기 상태를 유지하게 함.
     except rospy.ROSInterruptException:
+        # ROS가 종료되거나 Ctrl+C 등으로 노드가 중단될 때 발생하는 예외를 처리함.
+        # 보통은 이 예외가 발생하면 노드가 아무런 오류 메시지 없이 조용히 종료되도록 'pass'를 사용함.
         pass
 
+# 이 부분이 파이썬 스크립트가 직접 실행될 때만 main() 함수를 호출하도록 하는 표준 파이썬 관용구임.
 if __name__ == "__main__":
-    main()
+    main() # main 함수를 호출하여 노드를 시작함.
+
+# addServer 파일 분석: 서비스 제공자 (서비스 서버 노드)
+# 이 파이썬 스크립트는 AddTwoInts.srv에서 정의한 약속에 따라 다른 노드로부터 서비스 요청을 받아서 처리하고, 그 결과를 돌려주는 역할을 함.
+# 마치 식당의 주방장처럼 손님(클라이언트)의 주문(요청)을 받아서 요리하고(처리) 음식을 내어주는(응답) 거랑 같음.
+# ROS에선 이렇게 요청을 처리하고 응답하는 주체를 **서비스 서버(Service Server)**라고 부름.
+
+    # add_two_int라는 이름으로 서비스를 제공한다고 ROS에 등록함.
+    # 클라이언트로부터 요청이 오면 callback 함수를 호출함.
+    # callback 함수는 요청의 내용을 확인하고, 연산(plus 또는 minus)을 수행함.
+    # 처리 결과를 응답 객체에 담아 클라이언트에게 돌려줌. (여기서는 time.sleep(5) 때문에 5초 대기 후 응답)
