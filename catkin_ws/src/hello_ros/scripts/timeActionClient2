@@ -37,7 +37,7 @@ class ActionClient:
         # 액션이 완료될 때 호출될 콜백 함수(done_cb)를 함께 지정함.
         self.client.send_goal(goal, feedback_cb=self.feedback_cb, done_cb=self.done_cb) # 서버에 goal 을 요청함.
         # [보충 설명]: send_goal() 함수는 목표를 보낸 즉시 반환되므로 클라이언트 노드는 멈추지 않고 계속 실행됨.
-        #              피드백이나 최종 결과는 콜백 함수를 통해 비동기적으로 처리됨.
+        #            피드백이나 최종 결과는 콜백 함수를 통해 비동기적으로 처리됨.
 
     # 액션이 완료되었을 때 호출되는 콜백(callback) 함수임.
     # 'state'는 액션의 최종 상태(예: SUCCEEDED, ABORTED, PREEMPTED)를 나타내고,
