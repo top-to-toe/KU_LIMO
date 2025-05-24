@@ -6,13 +6,6 @@ from rcl_interfaces.msg import SetParametersResult
 from rclpy.node import Node
 from rclpy.parameter import Parameter
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
->>>>>>> e6734c5 (move_limo.py 파일 수정: 코드 스타일 개선을 위한 공백 추가)
-=======
->>>>>>> cec5998 (move_limo.py 파일 수정: 불필요한 공백 제거)
 class Move_turtle(Node):
     def __init__(self):
         super().__init__("move_limo")  # node name
@@ -40,13 +33,6 @@ class Move_turtle(Node):
         self.pub.publish(msg)
         # self.vel += 0.01  # type: ignore
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
->>>>>>> e6734c5 (move_limo.py 파일 수정: 코드 스타일 개선을 위한 공백 추가)
-=======
->>>>>>> cec5998 (move_limo.py 파일 수정: 불필요한 공백 제거)
 def main():
     rclpy.init()
     node = Move_turtle()
@@ -55,12 +41,5 @@ def main():
     except KeyboardInterrupt:
         node.destroy_node()
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
->>>>>>> e6734c5 (move_limo.py 파일 수정: 코드 스타일 개선을 위한 공백 추가)
-=======
->>>>>>> cec5998 (move_limo.py 파일 수정: 불필요한 공백 제거)
 if __name__ == "__main__":
     main()
