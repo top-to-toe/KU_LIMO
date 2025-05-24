@@ -20,6 +20,15 @@
             </geometry>
             <material name="blue"/>
         </visual>
+        <collision>
+            <geometry>
+                <cylinder length="0.6" radius="0.2" />
+            </geometry>
+        </collision>
+        <inertial>
+            <mass vlue="10"/>
+            <inertia ixx="1e-3" ixy="0.0" ixz="0.0" iyy="1e-3" iyz="0.0" izz="1e-3"/>
+        </inertial>
     </link>
 
     <link name="right_leg">
@@ -30,6 +39,16 @@
             <origin rpy="0 1.57 0" xyz="0 0 -0.3"/>
             <material name="white"/>
         </visual>
+        <collision>
+            <geometry>
+                <box size="0.6 0.1 0.2" />
+            </geometry>
+            <origin rpy="0 1.57 0" xyz="0 0 -0.3"/>
+        </collision>
+        <inertial>
+            <mass vlue="10"/>
+            <inertia ixx="1e-3" ixy="0.0" ixz="0.0" iyy="1e-3" iyz="0.0" izz="1e-3"/>
+        </inertial>
     </link>
 
     <link name="right_front_wheel">
@@ -40,6 +59,16 @@
             <origin rpy="1.57 0 0" xyz="0 0 0"/>
             <material name="black"/>
         </visual>
+        <collision>
+            <geometry>
+                <cylinder length="0.1" radius="0.035"/>
+            </geometry>
+            <origin rpy="1.57 0 0" xyz="0 0 0"/>
+        </collision>
+        <inertial>
+            <mass vlue="1"/>
+            <inertia ixx="1e-3" ixy="0.0" ixz="0.0" iyy="1e-3" iyz="0.0" izz="1e-3"/>
+        </inertial>
     </link>
 
     <joint name="right_front_wheel_joint" type="continuous">
@@ -63,6 +92,16 @@
             <origin rpy="0 1.57 0" xyz="0 0 -0.3"/>
             <material name="white"/>
         </visual>
+        <collision>
+            <geometry>
+                <box size="0.6 0.1 0.2" />
+            </geometry>
+            <origin rpy="0 1.57 0" xyz="0 0 -0.3"/>
+        </collision>
+        <inertial>
+            <mass vlue="10"/>
+            <inertia ixx="1e-3" ixy="0.0" ixz="0.0" iyy="1e-3" iyz="0.0" izz="1e-3"/>
+        </inertial>
     </link>
 
     <link name="left_front_wheel">
@@ -73,6 +112,16 @@
             <origin rpy="1.57 0 0" xyz="0 0 0"/>
             <material name="black"/>
         </visual>
+        <collision>
+            <geometry>
+                <cylinder length="0.1" radius="0.035"/>
+            </geometry>
+            <origin rpy="1.57 0 0" xyz="0 0 0"/>
+        </collision>
+        <inertial>
+            <mass vlue="1"/>
+            <inertia ixx="1e-3" ixy="0.0" ixz="0.0" iyy="1e-3" iyz="0.0" izz="1e-3"/>
+        </inertial>
     </link>
 
     <joint name="left_front_wheel_joint" type="continuous">
