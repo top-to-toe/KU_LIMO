@@ -21,14 +21,15 @@ setup(
             glob(os.path.join("urdf", "*.urdf")),
         ),
     ],
-    install_requires=["setuptools"],
+    install_requires=['setuptools'],
     zip_safe=True,
-    maintainer="aa",
-    maintainer_email="freshmea@naver.com",
-    description="TODO: Package description",
-    license="TODO: License declaration",
-    tests_require=["pytest"],
+    maintainer='lee',
+    maintainer_email='hansollee333@gmail.com',
+    description='TODO: Package description',
+    license='TODO: License declaration',
+    tests_require=['pytest'],
     entry_points={
-        "console_scripts": [],
+        'console_scripts': [
+        ],
     },
 )
