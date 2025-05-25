@@ -18,7 +18,7 @@ setup(
         ),
         (
             "share/" + package_name + "/urdf",
-            glob(os.path.join("urdf", "*.urdf")),
+            glob(os.path.join("urdf", "*.*")),
         ),
     ],
     install_requires=['setuptools'],
