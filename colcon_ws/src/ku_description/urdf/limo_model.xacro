@@ -1,0 +1,205 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="limo">
+    <!-- 상수 정의 -->
+    <xacro:property name="body_length" value="0.6"/>
+    <xacro:property name="body_radius" value="0.2"/>
+    <xacro:property name="leg_length" value="0.6"/>
+    <xacro:property name="leg_width" value="0.1"/>
+    <xacro:property name="leg_height" value="0.2"/>
+    <xacro:property name="wheel_length" value="0.1"/>
+    <xacro:property name="wheel_radius" value="0.035"/>
+    <xacro:property name="leg_offset_y" value="0.22"/>
+    <xacro:property name="leg_offset_z" value="0.25"/>
+    <xacro:property name="wheel_offset_z" value="-0.65"/>
+    <xacro:property name="lidar_height" value="0.1"/>
+    <xacro:property name="camera_offset_z" value="0.3"/>
+
+    <!-- 재질 정의 -->
+    <material name="white">
+        <color rgba="1 1 1 1"/>
+    </material>
+    <material name="blue">
+        <color rgba="0 0 0.8 1"/>
+    </material>
+    <material name="black">
+        <color rgba="0 0 0 1"/>
+    </material>
+
+    <!-- 매크로 정의 -->
+    <xacro:macro name="default_inertial" params="mass *shape">
+        <collision>
+            <xacro:insert_block name="shape"/>
+        </collision>
+        <inertial>
+            <mass value="${mass}"/>
+            <!-- 단순화된 관성 행렬: 교육용으로 작은 값 사용 -->
+            <origin xyz="0 0 0"/>
+            <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+        </inertial>
+    </xacro:macro>
+
+    <xacro:macro name="leg_macro" params="side">
+        <link name="${side}_leg">
+            <visual>
+                <geometry>
+                    <box size="${leg_length} ${leg_width} ${leg_height}"/>
+                </geometry>
+                <origin rpy="0 1.57 0" xyz="0 0 -0.3"/>
+                <material name="white"/>
+            </visual>
+            <xacro:default_inertial mass="1">
+                <geometry>
+                    <box size="${leg_length} ${leg_width} ${leg_height}"/>
+                </geometry>
+            </xacro:default_inertial>
+        </link>
+        <joint name="base_to_${side}_leg" type="fixed">
+            <parent link="base_link"/>
+            <child link="${side}_leg"/>
+            <xacro:property name="y_offset" value="${-leg_offset_y if side == 'right' else leg_offset_y}"/>
+            <origin xyz="0 ${y_offset} ${leg_offset_z}"/>
+        </joint>
+    </xacro:macro>
+
+    <xacro:macro name="wheel_macro" params="side">
+        <link name="${side}_front_wheel">
+            <visual>
+                <geometry>
+                    <cylinder length="${wheel_length}" radius="${wheel_radius}"/>
+                </geometry>
+                <origin rpy="1.57 0 0" xyz="0 0 0"/>
+                <material name="black"/>
+            </visual>
+            <xacro:default_inertial mass="1">
+                <geometry>
+                    <cylinder length="${wheel_length}" radius="${wheel_radius}"/>
+                </geometry>
+            </xacro:default_inertial>
+        </link>
+        <joint name="${side}_front_wheel_joint" type="continuous">
+            <axis xyz="0 1 0"/>
+            <parent link="${side}_leg"/>
+            <child link="${side}_front_wheel"/>
+            <origin xyz="0 0 ${wheel_offset_z}"/>
+        </joint>
+    </xacro:macro>
+
+    <xacro:macro name="sensor_macro" params="type name offset_z">
+        <link name="${name}">
+            <visual>
+                <geometry>
+                    <xacro:if value="${type == 'lidar'}">
+                        <cylinder length="0.05" radius="0.03"/>
+                    </xacro:if>
+                    <xacro:if value="${type == 'camera'}">
+                        <box size="0.05 0.05 0.03"/>
+                    </xacro:if>
+                </geometry>
+                <material name="black"/>
+            </visual>
+            <xacro:default_inertial mass="0.1">
+                <geometry>
+                    <xacro:if value="${type == 'lidar'}">
+                        <cylinder length="0.05" radius="0.03"/>
+                    </xacro:if>
+                    <xacro:if value="${type == 'camera'}">
+                        <box size="0.05 0.05 0.03"/>
+                    </xacro:if>
+                </geometry>
+            </xacro:default_inertial>
+        </link>
+        <joint name="base_to_${name}" type="fixed">
+            <parent link="base_link"/>
+            <child link="${name}"/>
+            <origin xyz="0 0 ${offset_z}"/>
+        </joint>
+    </xacro:macro>
+
+    <!-- 링크 및 조인트 정의 -->
+    <link name="base_link">
+        <visual>
+            <geometry>
+                <cylinder length="${body_length}" radius="${body_radius}"/>
+            </geometry>
+            <material name="blue"/>
+        </visual>
+        <xacro:default_inertial mass="10">
+            <geometry>
+                <cylinder length="${body_length}" radius="${body_radius}"/>
+            </geometry>
+        </xacro:default_inertial>
+    </link>
+
+    <!-- Gazebo 속성 추가 -->
+    <gazebo reference="base_link">
+        <material>Gazebo/Blue</material>
+        <mu1>0.8</mu1>
+        <mu2>0.6</mu2>
+    </gazebo>
+
+    <!-- 좌우 다리 및 바퀴 추가 -->
+    <xacro:leg_macro side="right"/>
+    <xacro:leg_macro side="left"/>
+    <gazebo reference="right_leg">
+        <material>Gazebo/White</material>
+        <mu1>0.7</mu1>
+        <mu2>0.5</mu2>
+    </gazebo>
+    <gazebo reference="left_leg">
+        <material>Gazebo/White</material>
+        <mu1>0.7</mu1>
+        <mu2>0.5</mu2>
+    </gazebo>
+
+    <xacro:wheel_macro side="right"/>
+    <xacro:wheel_macro side="left"/>
+    <gazebo reference="right_front_wheel">
+        <material>Gazebo/Black</material>
+        <mu1>1.0</mu1>
+        <mu2>0.9</mu2>
+    </gazebo>
+    <gazebo reference="left_front_wheel">
+        <material>Gazebo/Black</material>
+        <mu1>1.0</mu1>
+        <mu2>0.9</mu2>
+    </gazebo>
+
+    <!-- 센서 추가 -->
+    <xacro:sensor_macro type="lidar" name="lidar" offset_z="${lidar_height}"/>
+    <gazebo reference="lidar">
+        <material>Gazebo/Black</material>
+        <sensor type="ray" name="lidar_sensor">
+            <ray>
+                <range>
+                    <min>0.1</min>
+                    <max>10.0</max>
+                </range>
+            </ray>
+            <plugin name="lidar_plugin" filename="libgazebo_ros_laser.so">
+                <ros>
+                    <namespace>/lidar</namespace>
+                    <remapping>~/out:=scan</remapping>
+                </ros>
+            </plugin>
+        </sensor>
+    </gazebo>
+
+    <xacro:sensor_macro type="camera" name="camera" offset_z="${camera_offset_z}"/>
+    <gazebo reference="camera">
+        <material>Gazebo/Black</material>
+        <sensor type="camera" name="camera_sensor">
+            <camera>
+                <image>
+                    <width>640</width>
+                    <height>480</height>
+                </image>
+            </camera>
+            <plugin name="camera_plugin" filename="libgazebo_ros_camera.so">
+                <ros>
+                    <namespace>/camera</namespace>
+                    <remapping>~/out:=image_raw</remapping>
+                </ros>
+            </plugin>
+        </sensor>
+    </gazebo>
+</robot>

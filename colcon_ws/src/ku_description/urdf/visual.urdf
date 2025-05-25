@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- ros2 launch ku_description display.launch.py model:=urdf/origin.urdf -->
+<!-- ros2 launch ku_description display.launch.py model:=urdf/visual.urdf -->
 <robot name="myfirst">
     <material name="white">
         <color rgba="1 1 1 1"/>
@@ -16,7 +16,7 @@
     <link name="base_link">
         <visual>
             <geometry>
-                <cylinder length="0.6" radius="0.2" />
+                <cylinder length="0.6" radius="0.2"/>
             </geometry>
             <material name="blue"/>
         </visual>
@@ -25,7 +25,7 @@
     <link name="right_leg">
         <visual>
             <geometry>
-                <box size="0.6 0.1 0.2" />
+                <box size="0.6 0.1 0.2"/>
             </geometry>
             <origin rpy="0 1.57 0" xyz="0 0 -0.3"/>
             <material name="white"/>
@@ -45,20 +45,20 @@
     <joint name="right_front_wheel_joint" type="continuous">
         <axis rpy="0 0 0" xyz="0 1 0"/>
         <parent link="right_leg"/>
-        <child link= "right_front_wheel"/>
+        <child link="right_front_wheel"/>
         <origin xyz="0 0 -0.65"/>
     </joint>
 
     <joint name="base_to_right_leg" type="fixed">
         <parent link="base_link"/>
-        <child link= "right_leg"/>
+        <child link="right_leg"/>
         <origin xyz="0 -0.22 0.25"/>
     </joint>
 
     <link name="left_leg">
         <visual>
             <geometry>
-                <box size="0.6 0.1 0.2" />
+                <box size="0.6 0.1 0.2"/>
             </geometry>
             <origin rpy="0 1.57 0" xyz="0 0 -0.3"/>
             <material name="white"/>
@@ -78,14 +78,13 @@
     <joint name="left_front_wheel_joint" type="continuous">
         <axis rpy="0 0 0" xyz="0 1 0"/>
         <parent link="left_leg"/>
-        <child link= "left_front_wheel"/>
+        <child link="left_front_wheel"/>
         <origin xyz="0 0 -0.65"/>
     </joint>
 
     <joint name="base_to_left_leg" type="fixed">
         <parent link="base_link"/>
-        <child link= "left_leg"/>
+        <child link="left_leg"/>
         <origin xyz="0 0.22 0.25"/>
     </joint>
-
 </robot>
