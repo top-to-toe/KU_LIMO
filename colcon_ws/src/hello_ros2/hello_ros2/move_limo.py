@@ -7,7 +7,6 @@ from rcl_interfaces.msg import SetParametersResult
 from rclpy.node import Node
 from rclpy.parameter import Parameter
 
-
 class Move_turtle(Node):
     def __init__(self):
         super().__init__("move_limo")  # node name
@@ -35,7 +34,6 @@ class Move_turtle(Node):
         self.pub.publish(msg)
         # self.vel += 0.01  # type: ignore
 
-
 def main():
     rclpy.init()
     node = Move_turtle()
@@ -43,7 +41,6 @@ def main():
         rclpy.spin(node)
     except KeyboardInterrupt:
         node.destroy_node()
-
 
 if __name__ == "__main__":
     main()
