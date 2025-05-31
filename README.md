@@ -20,6 +20,7 @@
 * **환경 변수 설정:**
 
     ```bash
+    (~/.bashrc)
     export TURTLEBOT3_MODEL=burger # 또는 다른 터틀봇3 모델 (waffle, etc.)
     source /usr/share/gazebo/setup.bash # Gazebo 사용을 위한 설정
     export SVGA_VGPU10=0 # 가상 GPU 관련 설정 (필요한 경우)
@@ -43,7 +44,7 @@
 
     ```bash
     cd ~/kuLimo/colcon_ws/src
-    git clone [https://github.com/agilexrobotics/limo_ros2.git](https://github.com/agilexrobotics/limo_ros2.git) # LIMO 로봇 관련 (수업 내용과 관련 없을 수 있음)
+    git clone [https://github.com/agilexrobotics/limo_ros2.git](https://github.com/agilexrobotics/limo_ros2.git) # LIMO 로봇 관련
     git clone -b humble [https://github.com/ROBOTIS-GIT/turtlebot3_simulations.git](https://github.com/ROBOTIS-GIT/turtlebot3_simulations.git) # 터틀봇3 시뮬레이션
     git clone -b humble [https://github.com/ROBOTIS-GIT/DynamixelSDK.git](https://github.com/ROBOTIS-GIT/DynamixelSDK.git) # 다이나믹셀 SDK (터틀봇3 구동기 제어)
     git clone -b humble [https://github.com/ROBOTIS-GIT/turtlebot3.git](https://github.com/ROBOTIS-GIT/turtlebot3.git) # 터틀봇3 관련 핵심 패키지
