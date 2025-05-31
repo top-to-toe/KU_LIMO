@@ -2,6 +2,10 @@
 # 초심자도 이해할 수 있도록 각 행과 파트별로 상세한 주석을 추가하였습니다.
 # 이 코드는 ROS2의 퍼블리셔-서브스크라이버 구조, 메시지 타입, 타이머 사용법, OccupancyGrid 맵 구조 이해에 도움이 됩니다.
 
+# ros2 topic echo /map --once
+# ros2 run tf2_ros static_transform_publisher 0 0 0 0 0 0 map odom - tf 임이 발행
+# ros2 run hello_ros2 publish_map
+
 import rclpy  # ROS2 Python 클라이언트 라이브러리 임포트. ROS2 노드, 퍼블리셔, 서브스크라이버 등 기능 제공.
 from nav_msgs.msg import OccupancyGrid  # OccupancyGrid 메시지 타입 임포트. 맵 데이터를 표현할 때 사용.
 from rclpy.node import Node  # ROS2 노드의 기본 클래스 임포트.
