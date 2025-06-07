@@ -46,6 +46,7 @@ setup(
             "move_limo = hello_ros2.move_limo:main",
             "publish_map = hello_ros2.publish_map:main",
             "scan_map = hello_ros2.scan_map:main",
+            "patrol = hello_ros2.patrol:main",
         ],
     },
 )
