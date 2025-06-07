@@ -3,10 +3,10 @@
 
 # 필요한 패키지 설치 명령어 (주석)
 # sudo apt install ros-humble-tf-transformations
-# ros2 run turtlesim turtlesim_node      # turtlesim 시뮬레이터 실행
-# ros2 run hello_ros2 follow_turtlesim   # 본 코드 실행
-# rviz2 -> tf 확인                       # rviz2에서 tf 프레임 확인
-# ros2 run turtlesim turtle_teleop_key   # 키보드로 거북이 조작
+# ros2 run turtlesim turtlesim_node                 # turtlesim 시뮬레이터 실행
+# ros2 run hello_ros2 follow_turtlesim              # 본 코드 실행
+# rviz2 -> tf 확인                                   # rviz2에서 tf 프레임 확인
+# ros2 run turtlesim turtle_teleop_key              # 키보드로 거북이 조작
 
 import rclpy  # ROS2 Python 클라이언트 라이브러리
 from geometry_msgs.msg import TransformStamped, Twist  # 메시지 타입 임포트
