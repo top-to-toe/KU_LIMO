@@ -90,7 +90,7 @@
     rqt
     ```
 
-    * `rqt` 실행 후 `Plugins` -> `Visualization` -> `Node Graph`, `TF Tree` 등을 선택하여 노드 연결 관계나 TF tree를 시각적으로 확인할 수 있습니다.
+    * `rqt` 실행 후 `Plugins` -> `Visualization` -> `Node Graph`, `TF Tree` 등을 선택하여 노드 연결 관계나 TF tree를 시각적으로 확인할 수 있음.
 
 5.  **SLAM 운용:**
 
