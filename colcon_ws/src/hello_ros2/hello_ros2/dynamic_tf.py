@@ -1,3 +1,6 @@
+# ros2 run hello_ros2 dynamic_tf
+# rviz2로 확인
+
 import rclpy
 import rclpy.logging
 from geometry_msgs.msg import TransformStamped
