@@ -1,3 +1,5 @@
+# sudo apt install ros-humble-tf-transformations
+
 # ros2 run hello_ros2 dynamic_tf
 # rviz2로 확인
 
@@ -7,7 +9,6 @@ from geometry_msgs.msg import TransformStamped
 from rclpy.node import Node
 from tf2_ros.transform_broadcaster import TransformBroadcaster
 from tf_transformations import quaternion_from_euler
-# sudo apt install ros-humble-tf-transformations로 설치해야함.
 
 class DynamicFramePublisher(Node):
     def __init__(self):
